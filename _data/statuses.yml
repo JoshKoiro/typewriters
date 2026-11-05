@@ -1,0 +1,22 @@
+# Status values used in each machine's `status:` field.
+# key   = what you type in the machine file
+# label = what visitors see
+# hidden_by_default = not shown in the gallery until a visitor selects that status
+#
+# Add new statuses here (e.g. "wanted", "on-loan") and they appear in the filters automatically.
+
+- key: collection
+  label: In collection
+  hidden_by_default: false
+
+- key: for-sale
+  label: For sale
+  hidden_by_default: false
+
+- key: sold
+  label: Sold
+  hidden_by_default: true
+
+- key: sighting
+  label: Sighting
+  hidden_by_default: true

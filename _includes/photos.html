@@ -1,0 +1,23 @@
+{%- comment -%}
+  Collects the photos for one machine from /photos/<machine-slug>/.
+  Usage: {% include photos.html machine=page %}
+  Sets: photo_list (array of paths, sorted), cover_path (string or empty)
+  The cover is the machine's `cover:` file if set, otherwise the first photo alphabetically.
+{%- endcomment -%}
+{%- assign machine_slug = include.machine.slug -%}
+{%- assign photo_dir = "/photos/" | append: machine_slug | append: "/" -%}
+{%- assign photo_list = "" | split: "" -%}
+{%- for f in site.static_files -%}
+  {%- assign ext = f.extname | downcase -%}
+  {%- if f.path contains photo_dir -%}
+    {%- if ext == ".jpg" or ext == ".jpeg" or ext == ".png" or ext == ".webp" -%}
+      {%- assign photo_list = photo_list | push: f.path -%}
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- assign photo_list = photo_list | sort -%}
+{%- if include.machine.cover and include.machine.cover != "" -%}
+  {%- assign cover_path = photo_dir | append: include.machine.cover -%}
+{%- else -%}
+  {%- assign cover_path = photo_list | first -%}
+{%- endif -%}

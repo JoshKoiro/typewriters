@@ -1,0 +1,73 @@
+---
+layout: default
+---
+{%- assign machines = site.machines | sort: "title" -%}
+
+{%- comment -%} Gather every tag used across all machines {%- endcomment -%}
+{%- assign all_tags = "" | split: "" -%}
+{%- for m in machines -%}
+  {%- for t in m.tags -%}
+    {%- assign all_tags = all_tags | push: t -%}
+  {%- endfor -%}
+{%- endfor -%}
+{%- assign all_tags = all_tags | uniq | sort -%}
+
+<section class="filters" aria-label="Filter the collection">
+  <input type="search" id="search" placeholder="Search make, model, typeface, serial…" aria-label="Search">
+
+  <div class="filter-group">
+    <span class="filter-label">Status</span>
+    {%- for s in site.data.statuses %}
+    <button type="button" class="chip" data-status="{{ s.key }}" data-default-hidden="{{ s.hidden_by_default }}" aria-pressed="false">{{ s.label }}</button>
+    {%- endfor %}
+  </div>
+
+  {%- if all_tags.size > 0 %}
+  <div class="filter-group">
+    <span class="filter-label">Tags</span>
+    {%- for t in all_tags %}
+    <button type="button" class="chip" data-tag="{{ t }}" aria-pressed="false">{{ t }}</button>
+    {%- endfor %}
+  </div>
+  {%- endif %}
+
+  <p class="result-count" id="result-count" aria-live="polite"></p>
+</section>
+
+<section class="gallery" id="gallery">
+  {%- for m in machines %}
+  {%- include photos.html machine=m -%}
+  {%- assign status_info = site.data.statuses | where: "key", m.status | first %}
+  <a class="card"
+     href="{{ m.url | relative_url }}"
+     data-status="{{ m.status }}"
+     data-tags="{{ m.tags | join: '|' }}"
+     data-search="{{ m.title | append: ' ' | append: m.nickname | append: ' ' | append: m.make | append: ' ' | append: m.model | append: ' ' | append: m.year | append: ' ' | append: m.serial | append: ' ' | append: m.typeface | append: ' ' | append: m.color | append: ' ' | append: m.made_in | downcase | escape }}">
+    <div class="card-image">
+      {%- if cover_path and cover_path != "" %}
+      <img src="{{ cover_path | relative_url }}" alt="{{ m.title }}" loading="lazy">
+      {%- else %}
+      <div class="no-photos">No photos yet</div>
+      {%- endif %}
+      <span class="status status-{{ m.status }}">{{ status_info.label | default: m.status }}</span>
+    </div>
+    <div class="card-body">
+      <h2>{{ m.title }}</h2>
+      {%- if m.nickname and m.nickname != "" %}<p class="nickname">&ldquo;{{ m.nickname }}&rdquo;</p>{% endif %}
+      {%- assign meta = "" | split: "" -%}
+      {%- if m.typeface and m.typeface != "" %}{% assign meta = meta | push: m.typeface %}{% endif -%}
+      {%- if m.status == "for-sale" and m.price and m.price != "" %}{% assign meta = meta | push: m.price %}{% endif -%}
+      {%- if meta.size > 0 %}
+      <p class="card-meta">{{ meta | join: " · " }}</p>
+      {%- endif %}
+      <p class="card-tags">
+        {%- for t in m.tags %}<span class="tag">{{ t }}</span>{% endfor -%}
+      </p>
+    </div>
+  </a>
+  {%- endfor %}
+</section>
+
+<p class="empty-state" id="empty-state" hidden>No machines match those filters.</p>
+
+<script src="{{ '/assets/js/filter.js' | relative_url }}" defer></script>

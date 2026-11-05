@@ -1,0 +1,76 @@
+---
+layout: default
+---
+{%- include photos.html machine=page -%}
+{%- assign status_info = site.data.statuses | where: "key", page.status | first -%}
+
+<article class="machine">
+  <a class="back-link" href="{{ '/' | relative_url }}">&larr; Back to the collection</a>
+
+  <header class="machine-header">
+    <h1>{{ page.title }}</h1>
+    {%- if page.nickname and page.nickname != "" %}
+    <p class="nickname">&ldquo;{{ page.nickname }}&rdquo;</p>
+    {%- endif %}
+    <p class="status-line">
+      <span class="status status-{{ page.status }}">{{ status_info.label | default: page.status }}</span>
+      {%- for tag in page.tags %}
+      <a class="tag" href="{{ '/' | relative_url }}?tag={{ tag | url_encode }}">{{ tag }}</a>
+      {%- endfor %}
+    </p>
+  </header>
+
+  {%- if page.status == "for-sale" %}
+  <aside class="sale-box">
+    <strong>This machine is for sale{% if page.price and page.price != "" %}: {{ page.price }}{% endif %}.</strong>
+    {%- if page.listing_url and page.listing_url != "" %}
+    <a class="button" href="{{ page.listing_url }}" target="_blank" rel="noopener">View listing</a>
+    {%- endif %}
+  </aside>
+  {%- endif %}
+
+  {%- if photo_list.size > 0 %}
+  <section class="photo-grid" aria-label="Photos">
+    {%- for p in photo_list %}
+    <a class="photo" href="{{ p | relative_url }}" data-lightbox>
+      <img src="{{ p | relative_url }}" alt="{{ page.title }}, photo {{ forloop.index }}" loading="lazy">
+    </a>
+    {%- endfor %}
+  </section>
+  {%- else %}
+  <div class="no-photos">No photos yet</div>
+  {%- endif %}
+
+  <div class="machine-body">
+    <section class="specs">
+      <h2>Details</h2>
+      <dl>
+        <dt>Make</dt><dd>{{ page.make }}</dd>
+        <dt>Model</dt><dd>{{ page.model }}</dd>
+        <dt>Year</dt><dd>{{ page.year | default: "Unknown" }}</dd>
+        {%- if page.serial and page.serial != "" %}<dt>Serial</dt><dd>{{ page.serial }}</dd>{% endif %}
+        {%- if page.typeface and page.typeface != "" %}<dt>Typeface</dt><dd>{{ page.typeface }}</dd>{% endif %}
+        {%- if page.pitch and page.pitch != "" %}<dt>Pitch</dt><dd>{{ page.pitch }}</dd>{% endif %}
+        {%- if page.color and page.color != "" %}<dt>Color</dt><dd>{{ page.color }}</dd>{% endif %}
+        {%- if page.made_in and page.made_in != "" %}<dt>Made in</dt><dd>{{ page.made_in }}</dd>{% endif %}
+        {%- if page.condition and page.condition != "" %}<dt>Condition</dt><dd>{{ page.condition }}</dd>{% endif %}
+        {%- if page.acquired and page.acquired != "" %}<dt>Acquired</dt><dd>{{ page.acquired }}</dd>{% endif %}
+      </dl>
+      {%- if page.twdb_url and page.twdb_url != "" %}
+      <p><a href="{{ page.twdb_url }}" target="_blank" rel="noopener">View on the Typewriter Database &rarr;</a></p>
+      {%- endif %}
+    </section>
+
+    <section class="notes">
+      {{ content }}
+    </section>
+  </div>
+</article>
+
+<dialog class="lightbox" id="lightbox">
+  <button class="lightbox-close" aria-label="Close">&times;</button>
+  <button class="lightbox-prev" aria-label="Previous photo">&lsaquo;</button>
+  <img alt="">
+  <button class="lightbox-next" aria-label="Next photo">&rsaquo;</button>
+</dialog>
+<script src="{{ '/assets/js/lightbox.js' | relative_url }}" defer></script>

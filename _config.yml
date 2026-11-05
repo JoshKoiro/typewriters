@@ -1,0 +1,38 @@
+# ------------------------------------------------------------------
+# Site settings
+# ------------------------------------------------------------------
+title: "Josh's Typewriter Collection"
+description: "Manual typewriters: photos, serials, typefaces and notes."
+author: Josh
+
+# If the repo is named <username>.github.io, leave baseurl empty ("").
+# If the repo has any other name (e.g. "typewriters"), set it to "/typewriters".
+baseurl: "/typewriters"
+url: "https://joshkoiro.github.io"
+
+# ------------------------------------------------------------------
+# Machines collection: one Markdown file per typewriter in _machines/
+# ------------------------------------------------------------------
+collections:
+  machines:
+    output: true
+    permalink: /machines/:name/
+
+defaults:
+  - scope:
+      path: ""
+      type: machines
+    values:
+      layout: machine
+
+markdown: kramdown
+
+# Files that live in the repo but are not part of the published site
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - scripts/
+  - originals/
+  - _templates/
+  - vendor/
