@@ -1,0 +1,27 @@
+# Allowed values (and how they're displayed) for the machine fields that have a fixed list.
+# The gallery filters are built from these, in this order.
+
+size_class:
+  - key: ultra-portable
+    label: Ultra-portable
+  - key: portable
+    label: Portable
+  - key: semi-portable
+    label: Semi-portable
+  - key: standard
+    label: Standard (desktop)
+
+# Note: don't use yes/no as values in YAML; they turn into true/false.
+functional:
+  - key: working
+    label: Working
+    icon: "✅"
+    color: "#2f7d4f"
+  - key: needs-work
+    label: Needs work
+    icon: "🔧"
+    color: "#b7791f"
+  - key: parts-only
+    label: Parts only
+    icon: "⚙️"
+    color: "#6b5b4b"

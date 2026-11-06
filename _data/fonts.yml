@@ -1,0 +1,38 @@
+# ------------------------------------------------------------------
+# FONTS: change the site's typography here, nowhere else.
+#
+# Each role has three settings:
+#   name:     the font's name, spelled exactly as on Google Fonts
+#   google:   the part of the Google Fonts URL after "family=". Get it from
+#             fonts.google.com > pick a font > "Get font" > "Get embed code",
+#             and copy what follows "family=" (up to the next "&").
+#             Use "" for a font that's installed on the computer (no download).
+#   fallback: fonts to use while loading, or if the font isn't available
+#
+# Fonts worth trying for this site (name / google):
+#   Special Elite      / Special+Elite                       (worn typewriter)
+#   Cutive Mono        / Cutive+Mono                         (light typewriter)
+#   IBM Plex Mono      / IBM+Plex+Mono:wght@400;700
+#   Space Mono         / Space+Mono:wght@400;700
+#   Courier Prime      / Courier+Prime:wght@400;700
+#   Libre Baskerville  / Libre+Baskerville:wght@400;700      (classic serif)
+#   Lora               / Lora:wght@400;600
+#   Source Serif 4     / Source+Serif+4:opsz,wght@8..60,400;8..60,600
+#   Inter              / Inter:wght@400;600                  (clean sans-serif)
+# Sizes live at the top of assets/css/style.css (--text-*).
+# ------------------------------------------------------------------
+
+heading:   # site title, page titles, card titles, section headings
+  name: "Courier Prime"
+  google: "Courier+Prime:wght@400;700"
+  fallback: '"Courier New", Courier, monospace'
+
+body:      # notes and other longer text
+  name: "Source Serif 4"
+  google: "Source+Serif+4:opsz,wght@8..60,400;8..60,600"
+  fallback: 'Georgia, "Times New Roman", serif'
+
+ui:        # labels, filters, badges, details, buttons
+  name: "Courier Prime"
+  google: "Courier+Prime:wght@400;700"
+  fallback: '"Courier New", Courier, monospace'

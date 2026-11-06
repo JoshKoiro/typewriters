@@ -12,4 +12,7 @@ node_modules/
 
 .DS_Store
 Thumbs.db
+
+# Private ledger data, copied in by `npm run serve:private`. NEVER commit this.
+_data/private.yml
 yeet_manifest.md

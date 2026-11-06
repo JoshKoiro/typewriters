@@ -8,20 +8,24 @@
   },
   "scripts": {
     "setup": "npm install && bundle install",
-    "serve": "bundle exec jekyll serve --livereload",
+    "serve": "node scripts/sync-private.mjs --remove && bundle exec jekyll serve --livereload",
+    "serve:private": "node scripts/sync-private.mjs && bundle exec jekyll serve --livereload",
     "build": "bundle exec jekyll build",
     "clean": "bundle exec jekyll clean",
     "new": "node scripts/new-machine.mjs",
     "rename": "node scripts/rename-originals.mjs",
     "photos": "node scripts/prep-photos.mjs",
     "photos:force": "node scripts/prep-photos.mjs --force",
+    "ledger": "node scripts/ledger.mjs",
     "check:photos": "node scripts/check-photos.mjs",
-    "check": "npm run check:photos && npm run build",
+    "check:private": "node scripts/check-private.mjs",
+    "check": "npm run check:photos && npm run check:private && npm run build",
     "deploy": "npm run check && git push",
     "yeet": "node node_modules/code-context-yeeter/yeetCode.js"
   },
   "dependencies": {
     "code-context-yeeter": "github:JoshKoiro/code-context-yeeter",
-    "sharp": "^0.35.5"
+    "sharp": "^0.35.5",
+    "yaml": "^2.6.0"
   }
 }

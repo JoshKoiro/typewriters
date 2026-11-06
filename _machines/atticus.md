@@ -1,27 +1,45 @@
 ---
-title: "1948 Smith Corona Sterling" # What visitors see. Year + make + model reads well.
-nickname: "Atticus" # Optional name you've given the machine
+title: "1948 Smith Corona Sterling"
+nickname: "Atticus"
 make: "Smith Corona"
 model: "Sterling"
-year: "1948" # e.g. "1965", or "c. 1970" if estimated
+year: 1948
+year_approx: false
 serial: "4A235791"
-typeface: "Elite" # e.g. "Pica", "Elite", "Script"
-pitch: "12" # e.g. "10 cpi"
-color: "black"
 made_in: "USA"
-condition: "" # Short summary, e.g. "Working, cosmetic wear"
-acquired: "July 13th, 2026" # e.g. "2026" or "June 2026, estate sale"
+color: "black"
+
+# Specs
+typeface: "Elite"
+pitch: 12
+size_class: "portable" # ultra-portable | portable | semi-portable | standard
+keyboard: "QWERTY"
+carriage_width:
+spools: ""
+features: []
+weight: ""
+
+# Condition
+functional: working # working | needs-work | parts-only
+has_case: true
+typing_feel: # 1 to 5
+favorite: false
+
+# Ownership
+status: collection # collection | for-sale | sold | sighting
+acquired: 2026-07-13
+acquired_approx: false
 purchased_from: "Facebook Marketplace"
-status: collection # collection | for-sale | sold | sighting (see _data/statuses.yml)
-tags: [] # e.g. [ultra-portable, 1960s, script]
+sold_date:
+price: ""
+listing_url: ""
 
-price: "" # Shown only when status is for-sale, e.g. "$180 CAD"
-listing_url: "" # Facebook Marketplace (or other) listing link
+# Links and display
+twdb_url: "https://typewriterdatabase.com/1948-smith-corona-sterling.28777.typewriter"
+tags: []
+cover: ""
 
-twdb_url: "https://typewriterdatabase.com/1948-smith-corona-sterling.28777.typewriter" # Link to this machine's Typewriter Database gallery
-cover:
-  "" # Optional: photo file name to use as the gallery cover.
-  # Default: the first photo alphabetically.
+repairs: []
 ---
 
 ## Notes
@@ -30,5 +48,3 @@ Name: "Iris"
 Purchased on July 18th, 2026 on Facebook Marketplace
 Typebars need adjustment. 4 and / keys stick and @ key out of alignment enough that it's not printed on the type sample.
 Carriage bar has minor rubbing on gear.
-
-## Repair log

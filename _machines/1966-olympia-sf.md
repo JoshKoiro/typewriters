@@ -1,27 +1,45 @@
 ---
-title: "1966 Olympia SF" # What visitors see. Year + make + model reads well.
-nickname: "" # Optional name you've given the machine
+title: "1966 Olympia SF"
+nickname: ""
 make: "Olympia"
 model: "SF"
-year: "1966" # e.g. "1965", or "c. 1970" if estimated
+year: 1966
+year_approx: false
 serial: "1332250"
-typeface: "#89 Italic Elite" # e.g. "Pica", "Elite", "Script"
-pitch: "11" # e.g. "10 cpi"
-color: "cream"
 made_in: "Germany"
-condition: "" # Short summary, e.g. "Working, cosmetic wear"
-acquired: "October 3rd, 2026" # e.g. "2026" or "June 2026, estate sale"
+color: "cream"
+
+# Specs
+typeface: "#89 Italic Elite"
+pitch: 11
+size_class: "ultra-portable" # ultra-portable | portable | semi-portable | standard
+keyboard: "QWERTY"
+carriage_width:
+spools: ""
+features: []
+weight: ""
+
+# Condition
+functional: working       # working | needs-work | parts-only
+has_case: true
+typing_feel:              # 1 to 5
+favorite: false
+
+# Ownership
+status: collection        # collection | for-sale | sold | sighting
+acquired: 2026-10-03
+acquired_approx: false
 purchased_from: "Antique Store"
-status: collection # collection | for-sale | sold | sighting (see _data/statuses.yml)
-tags: [] # e.g. [ultra-portable, 1960s, script]
+sold_date:
+price: ""
+listing_url: ""
 
-price: "" # Shown only when status is for-sale, e.g. "$180 CAD"
-listing_url: "" # Facebook Marketplace (or other) listing link
+# Links and display
+twdb_url: "https://typewriterdatabase.com/1966-olympia-sf-de-luxe.29131.typewriter"
+tags: []
+cover: ""
 
-twdb_url: "https://typewriterdatabase.com/1966-olympia-sf-de-luxe.29131.typewriter" # Link to this machine's Typewriter Database gallery
-cover:
-  "" # Optional: photo file name to use as the gallery cover.
-  # Default: the first photo alphabetically.
+repairs: []
 ---
 
 ## Notes
@@ -29,5 +47,3 @@ cover:
 In beautiful working condition. Platen is pretty hard, but I only needed to replace the ribbon, and didn't need to go any degreasing or adjustments.
 The case is also in very good condition.
 Very happy with this one!
-
-## Repair log

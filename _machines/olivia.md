@@ -1,27 +1,52 @@
 ---
-title: "1956 Olivetti Lettera 22" # What visitors see. Year + make + model reads well.
-nickname: "Olivia (Liv)" # Optional name you've given the machine
+title: "1956 Olivetti Lettera 22"
+nickname: "Olivia (Liv)"
 make: "Olivetti"
 model: "Lettera 22"
-year: "1956" # e.g. "1965", or "c. 1970" if estimated
+year: 1956
+year_approx: false
 serial: "327548"
-typeface: "#84 Bodoni Elite" # e.g. "Pica", "Elite", "Script"
-pitch: "12" # e.g. "10 cpi"
-color: "brown"
 made_in: "Italy"
-condition: "" # Short summary, e.g. "Working, cosmetic wear"
-acquired: "November 2nd, 2026" # e.g. "2026" or "June 2026, estate sale"
+color: "brown"
+
+# Specs
+typeface: "#84 Bodoni Elite"
+pitch: 12
+size_class: "ultra-portable" # ultra-portable | portable | semi-portable | standard
+keyboard: "QWERTY"
+carriage_width:
+spools: ""
+features: []
+weight: ""
+
+# Condition
+functional: needs-work # working | needs-work | parts-only
+has_case: true
+typing_feel: # 1 to 5
+favorite: false
+
+# Ownership
+status: collection # collection | for-sale | sold | sighting
+acquired: 2026-11-02
+acquired_approx: false
 purchased_from: "Facebook Marketplace"
-status: collection # collection | for-sale | sold | sighting (see _data/statuses.yml)
-tags: [] # e.g. [ultra-portable, 1960s, script]
+sold_date:
+price: ""
+listing_url: ""
 
-price: "" # Shown only when status is for-sale, e.g. "$180 CAD"
-listing_url: "" # Facebook Marketplace (or other) listing link
+# Links and display
+twdb_url: "https://typewriterdatabase.com/1956-olivetti-lettera-22.29312.typewriter"
+tags: []
+cover: ""
 
-twdb_url: "https://typewriterdatabase.com/1956-olivetti-lettera-22.29312.typewriter" # Link to this machine's Typewriter Database gallery
-cover:
-  "" # Optional: photo file name to use as the gallery cover.
-  # Default: the first photo alphabetically.
+repairs:
+  - date: 2026-11-03
+    work: >-
+      After doing some writing tests with it, I quickly noticed that the feed rollers had flat
+      spots, so I'm replacing them with silicone rubber tubing that I will cut to size. The
+      sizes measured with my calipers are 9mm OD and 5mm ID. However, since I live in the US,
+      and we use "Freedom Units", I am replacing it with 3/8" OD and 3/16" ID tubing. The
+      success of this is yet to be determined...
 ---
 
 ## Notes
@@ -38,7 +63,3 @@ I have wanted a Lettera 22 ever since I first started getting interested into ty
 The experience of typing on a Lettera 22 is a bit different than the 32 (which has been my only experience of Olivetti up to this point), and I think I like it a bit more. Both Lettera's have that little "squish" when the keys are bottoming-out that feels very satisfying and soft on the fingers, though the Lettera 22 seems to be a little more smooth in my opinon. Of course, every machine is different as I am learning with every machine I lay fingers on, so one machine is not always a perfect picture of every specimen of that model.
 
 Time will tell for sure, but I could easily see this machine becoming by daily typer.
-
-## Repair log
-
-- 2026-11-03: After doing some writing tests with it, I quickly noticed that the feed rollers had flat spots, so I'm replacing them with silicone rubber tubing that I will cut to size. The sizes measured with my calipers are 9mm OD and 5mm ID. However, since I live in the US, and we use "Freedom Units", I am replacing it with 3/8" OD and 3/16" ID tubing. The success of this is yet to be determined...

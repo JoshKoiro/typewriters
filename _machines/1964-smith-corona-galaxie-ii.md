@@ -1,27 +1,45 @@
 ---
-title: "1964 Smith Corona Galaxie II" # What visitors see. Year + make + model reads well.
-nickname: "Mackabee (Mac)" # Optional name you've given the machine
+title: "1964 Smith Corona Galaxie II"
+nickname: "Mackabee (Mac)"
 make: "Smith Corona"
 model: "Galaxie II"
-year: "1964" # e.g. "1965", or "c. 1970" if estimated
+year: 1964
+year_approx: false
 serial: "6T2 129473"
-typeface: "Pica" # e.g. "Pica", "Elite", "Script"
-pitch: "10" # e.g. "10 cpi"
-color: "dark blue & cream"
 made_in: "USA"
-condition: "" # Short summary, e.g. "Working, cosmetic wear"
-acquired: "August 23rd, 2026" # e.g. "2026" or "June 2026, estate sale"
+color: "dark blue & cream"
+
+# Specs
+typeface: "Pica"
+pitch: 10
+size_class: "portable"    # ultra-portable | portable | semi-portable | standard
+keyboard: "QWERTY"
+carriage_width:
+spools: ""
+features: []
+weight: ""
+
+# Condition
+functional: working       # working | needs-work | parts-only
+has_case: true
+typing_feel:              # 1 to 5
+favorite: false
+
+# Ownership
+status: collection        # collection | for-sale | sold | sighting
+acquired: 2026-08-23
+acquired_approx: false
 purchased_from: "Facebook Marketplace"
-status: collection # collection | for-sale | sold | sighting (see _data/statuses.yml)
-tags: [] # e.g. [ultra-portable, 1960s, script]
+sold_date:
+price: ""
+listing_url: ""
 
-price: "" # Shown only when status is for-sale, e.g. "$180 CAD"
-listing_url: "" # Facebook Marketplace (or other) listing link
+# Links and display
+twdb_url: "https://typewriterdatabase.com/1964-smith-corona-galaxie-ii.28790.typewriter"
+tags: []
+cover: ""
 
-twdb_url: "https://typewriterdatabase.com/1964-smith-corona-galaxie-ii.28790.typewriter" # Link to this machine's Typewriter Database gallery
-cover:
-  "" # Optional: photo file name to use as the gallery cover.
-  # Default: the first photo alphabetically.
+repairs: []
 ---
 
 ## Notes
@@ -29,5 +47,3 @@ cover:
 Single owner, was purchased from a woman whose mom bought it in the 60s, and it has been in the family.
 In great working condition. Has original metal ribbon spools. Great to type on. Case in excellent condition. Only missing two screws for the bottom plate.
 Very loud because of the rock-hard platen.
-
-## Repair log

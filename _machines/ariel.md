@@ -1,27 +1,45 @@
 ---
-title: "1967 Smith Corona Corsair" # What visitors see. Year + make + model reads well.
-nickname: "Ariel" # Optional name you've given the machine
+title: "1967 Smith Corona Corsair"
+nickname: "Ariel"
 make: "Smith Corona"
 model: "Corsair"
-year: "1967" # e.g. "1965", or "c. 1970" if estimated
+year: 1967
+year_approx: false
 serial: "6Y675921"
-typeface: "Pica" # e.g. "Pica", "Elite", "Script"
-pitch: "10" # e.g. "10 cpi"
-color: "blue"
 made_in: "USA"
-condition: "" # Short summary, e.g. "Working, cosmetic wear"
-acquired: "August 14th, 2026" # e.g. "2026" or "June 2026, estate sale"
+color: "blue"
+
+# Specs
+typeface: "Pica"
+pitch: 10
+size_class: "ultra-portable" # ultra-portable | portable | semi-portable | standard
+keyboard: "QWERTY"
+carriage_width:
+spools: ""
+features: []
+weight: ""
+
+# Condition
+functional: working # working | needs-work | parts-only
+has_case: true
+typing_feel: # 1 to 5
+favorite: false
+
+# Ownership
+status: collection # collection | for-sale | sold | sighting
+acquired: 2026-08-14
+acquired_approx: false
 purchased_from: "Antique Store"
-status: collection # collection | for-sale | sold | sighting (see _data/statuses.yml)
-tags: [] # e.g. [ultra-portable, 1960s, script]
+sold_date:
+price: ""
+listing_url: ""
 
-price: "" # Shown only when status is for-sale, e.g. "$180 CAD"
-listing_url: "" # Facebook Marketplace (or other) listing link
+# Links and display
+twdb_url: "https://typewriterdatabase.com/1967-smith-corona-corsair.28781.typewriter"
+tags: []
+cover: ""
 
-twdb_url: "https://typewriterdatabase.com/1967-smith-corona-corsair.28781.typewriter" # Link to this machine's Typewriter Database gallery
-cover:
-  "" # Optional: photo file name to use as the gallery cover.
-  # Default: the first photo alphabetically.
+repairs: []
 ---
 
 ## Notes
@@ -29,5 +47,3 @@ cover:
 In working condition, but several typebars are misaligned and need tuning.
 You can see some misalignment in the type sample with some red showing through.
 Case has Radio station sticker on inside. Radio Station existed in Reading PA during the late 1970s and early 1980s.
-
-## Repair log

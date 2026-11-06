@@ -3,6 +3,11 @@ layout: default
 ---
 {%- include photos.html machine=page -%}
 {%- assign status_info = site.data.statuses | where: "key", page.status | first -%}
+{%- assign functional_info = site.data.fields.functional | where: "key", page.functional | first -%}
+{%- assign size_info = site.data.fields.size_class | where: "key", page.size_class | first -%}
+{%- assign private = site.data.private[page.slug] -%}
+{%- capture acquired_iso %}{% if page.acquired %}{{ page.acquired | date: "%Y-%m-%d" }}{% endif %}{% endcapture -%}
+{%- capture sold_iso %}{% if page.sold_date %}{{ page.sold_date | date: "%Y-%m-%d" }}{% endif %}{% endcapture -%}
 
 <article class="machine">
   <a class="back-link" href="{{ '/' | relative_url }}">&larr; Back to the collection</a>
@@ -13,7 +18,14 @@ layout: default
     <p class="nickname">&ldquo;{{ page.nickname }}&rdquo;</p>
     {%- endif %}
     <p class="status-line">
-      <span class="status status-{{ page.status }}">{{ status_info.label | default: page.status }}</span>
+      <span class="badge" style="--badge-color: {{ status_info.color | default: '#555' }}">
+        {%- if status_info.icon and status_info.icon != "" %}<span class="badge-icon" aria-hidden="true">{{ status_info.icon }}</span>{% endif -%}
+        {{ status_info.label | default: page.status }}
+      </span>
+      {%- if functional_info %}
+      <span class="badge" style="--badge-color: {{ functional_info.color }}"><span class="badge-icon" aria-hidden="true">{{ functional_info.icon }}</span>{{ functional_info.label }}</span>
+      {%- endif %}
+      {%- if page.favorite == true %}<span class="star" title="Favorite">★</span>{% endif %}
       {%- for tag in page.tags %}
       <a class="tag" href="{{ '/' | relative_url }}?tag={{ tag | url_encode }}">{{ tag }}</a>
       {%- endfor %}
@@ -26,6 +38,20 @@ layout: default
     {%- if page.listing_url and page.listing_url != "" %}
     <a class="button" href="{{ page.listing_url }}" target="_blank" rel="noopener">View listing</a>
     {%- endif %}
+  </aside>
+  {%- endif %}
+
+  {%- if private %}
+  <aside class="private-box">
+    <h2>🔒 Private: only visible with <code>npm run serve:private</code></h2>
+    <dl>
+      {%- if private.paid %}<dt>Paid</dt><dd>${{ private.paid }}</dd>{% endif %}
+      {%- if private.bought_at and private.bought_at != "" %}<dt>Bought at</dt><dd>{{ private.bought_at }}</dd>{% endif %}
+      {%- if private.seller and private.seller != "" %}<dt>Seller</dt><dd>{{ private.seller }}</dd>{% endif %}
+      {%- if private.sold_for %}<dt>Sold for</dt><dd>${{ private.sold_for }}{% if private.paid %} ({% assign diff = private.sold_for | minus: private.paid %}{% if diff >= 0 %}+{% endif %}{{ diff }}){% endif %}</dd>{% endif %}
+      {%- if private.sold_to and private.sold_to != "" %}<dt>Sold to</dt><dd>{{ private.sold_to }}</dd>{% endif %}
+    </dl>
+    {%- if private.notes and private.notes != "" %}<p>{{ private.notes }}</p>{% endif %}
   </aside>
   {%- endif %}
 
@@ -47,22 +73,91 @@ layout: default
       <dl>
         <dt>Make</dt><dd>{{ page.make }}</dd>
         <dt>Model</dt><dd>{{ page.model }}</dd>
-        <dt>Year</dt><dd>{{ page.year | default: "Unknown" }}</dd>
+        <dt>Year</dt><dd>{% if page.year %}{% if page.year_approx == true %}c. {% endif %}{{ page.year }}{% else %}Unknown{% endif %}</dd>
         {%- if page.serial and page.serial != "" %}<dt>Serial</dt><dd>{{ page.serial }}</dd>{% endif %}
-        {%- if page.typeface and page.typeface != "" %}<dt>Typeface</dt><dd>{{ page.typeface }}</dd>{% endif %}
-        {%- if page.pitch and page.pitch != "" %}<dt>Pitch</dt><dd>{{ page.pitch }}</dd>{% endif %}
-        {%- if page.color and page.color != "" %}<dt>Color</dt><dd>{{ page.color }}</dd>{% endif %}
         {%- if page.made_in and page.made_in != "" %}<dt>Made in</dt><dd>{{ page.made_in }}</dd>{% endif %}
-        {%- if page.condition and page.condition != "" %}<dt>Condition</dt><dd>{{ page.condition }}</dd>{% endif %}
-        {%- if page.acquired and page.acquired != "" %}<dt>Acquired</dt><dd>{{ page.acquired }}</dd>{% endif %}
+        {%- if page.color and page.color != "" %}<dt>Color</dt><dd>{{ page.color }}</dd>{% endif %}
       </dl>
+
+      {%- capture specs_html -%}
+        {%- if page.typeface and page.typeface != "" %}<dt>Typeface</dt><dd>{{ page.typeface }}</dd>{% endif %}
+        {%- if page.pitch %}<dt>Pitch</dt><dd>{{ page.pitch }} cpi</dd>{% endif %}
+        {%- if size_info %}<dt>Size</dt><dd>{{ size_info.label }}</dd>{% endif %}
+        {%- if page.keyboard and page.keyboard != "" %}<dt>Keyboard</dt><dd>{{ page.keyboard }}</dd>{% endif %}
+        {%- if page.carriage_width %}<dt>Carriage</dt><dd>{{ page.carriage_width }}″ paper</dd>{% endif %}
+        {%- if page.spools and page.spools != "" %}<dt>Spools</dt><dd>{{ page.spools }}</dd>{% endif %}
+        {%- if page.features.size > 0 %}<dt>Features</dt><dd>{{ page.features | join: ", " }}</dd>{% endif %}
+        {%- if page.weight and page.weight != "" %}<dt>Weight</dt><dd>{{ page.weight }}</dd>{% endif %}
+      {%- endcapture -%}
+      {%- assign specs_html = specs_html | strip -%}
+      {%- if specs_html != "" %}
+      <h3>Specs</h3>
+      <dl>{{ specs_html }}</dl>
+      {%- endif %}
+
+      {%- capture condition_html -%}
+        {%- if functional_info %}<dt>Functional</dt><dd>{{ functional_info.icon }} {{ functional_info.label }}</dd>{% endif %}
+        {%- if page.has_case == true %}<dt>Case</dt><dd>Yes</dd>{% elsif page.has_case == false %}<dt>Case</dt><dd>No</dd>{% endif %}
+        {%- if page.typing_feel %}
+        <dt>Typing feel</dt>
+        <dd class="feel" title="{{ page.typing_feel }} out of 5">
+          {%- for i in (1..5) %}{% if i <= page.typing_feel %}●{% else %}<span class="feel-off">●</span>{% endif %}{% endfor -%}
+        </dd>
+        {%- endif %}
+      {%- endcapture -%}
+      {%- assign condition_html = condition_html | strip -%}
+      {%- if condition_html != "" %}
+      <h3>Condition</h3>
+      <dl>{{ condition_html }}</dl>
+      {%- endif %}
+
+      {%- capture ownership_html -%}
+        {%- if acquired_iso != "" %}
+        <dt>Acquired</dt>
+        <dd>
+          {%- if page.acquired_approx == true %}c. {{ page.acquired | date: "%B %Y" }}{% else %}{{ page.acquired | date: "%B %-d, %Y" }}{% endif %}
+          {%- if page.status != "sold" %} <span class="since" data-since="{{ acquired_iso }}" data-template="({d} ago)"></span>{% endif -%}
+        </dd>
+        {%- endif %}
+        {%- if page.purchased_from and page.purchased_from != "" %}<dt>From</dt><dd>{{ page.purchased_from }}</dd>{% endif %}
+        {%- if sold_iso != "" %}
+        <dt>Sold</dt>
+        <dd>
+          {{- page.sold_date | date: "%B %-d, %Y" -}}
+          {%- if acquired_iso != "" %} <span class="since" data-since="{{ acquired_iso }}" data-until="{{ sold_iso }}" data-template="(owned {d})"></span>{% endif -%}
+        </dd>
+        {%- endif %}
+      {%- endcapture -%}
+      {%- assign ownership_html = ownership_html | strip -%}
+      {%- if ownership_html != "" %}
+      <h3>Ownership</h3>
+      <dl>{{ ownership_html }}</dl>
+      {%- endif %}
+
       {%- if page.twdb_url and page.twdb_url != "" %}
-      <p><a href="{{ page.twdb_url }}" target="_blank" rel="noopener">View on the Typewriter Database &rarr;</a></p>
+      <p class="twdb-link"><a href="{{ page.twdb_url }}" target="_blank" rel="noopener">View on the Typewriter Database &rarr;</a></p>
       {%- endif %}
     </section>
 
     <section class="notes">
       {{ content }}
+
+      {%- if page.repairs.size > 0 %}
+      <div class="repairs">
+        <h2>Repair log</h2>
+        <table>
+          <thead><tr><th>Date</th><th>Work done</th></tr></thead>
+          <tbody>
+            {%- for r in page.repairs %}
+            <tr>
+              <td>{% if r.date %}{{ r.date | date: "%b %-d, %Y" }}{% endif %}</td>
+              <td>{{ r.work | markdownify }}</td>
+            </tr>
+            {%- endfor %}
+          </tbody>
+        </table>
+      </div>
+      {%- endif %}
     </section>
   </div>
 </article>

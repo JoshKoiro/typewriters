@@ -1,31 +1,47 @@
 ---
-title: "1971 Royal Mercury" # What visitors see. Year + make + model reads well.
-nickname: "Iris" # Optional name you've given the machine
+title: "1971 Royal Mercury"
+nickname: "Iris"
 make: "Royal"
 model: "Mercury"
-year: "1971" # e.g. "1965", or "c. 1970" if estimated
+year: 1971
+year_approx: false
 serial: "MC1716054"
-typeface: "Pica" # e.g. "Pica", "Elite", "Script"
-pitch: "10" # e.g. "10 cpi"
-color: "cream"
 made_in: "Japan"
-condition: "" # Short summary, e.g. "Working, cosmetic wear"
-acquired: "July 18th, 2026" # e.g. "2026" or "June 2026, estate sale"
+color: "cream"
+
+# Specs
+typeface: "Pica"
+pitch: 10
+size_class: "ultra-portable" # ultra-portable | portable | semi-portable | standard
+keyboard: "QWERTY"
+carriage_width:
+spools: ""
+features: []
+weight: ""
+
+# Condition
+functional: working # working | needs-work | parts-only
+has_case: true
+typing_feel: # 1 to 5
+favorite: false
+
+# Ownership
+status: collection # collection | for-sale | sold | sighting
+acquired: 2026-07-18
+acquired_approx: false
 purchased_from: "Facebook Marketplace"
-status: collection # collection | for-sale | sold | sighting (see _data/statuses.yml)
-tags: [] # e.g. [ultra-portable, 1960s, script]
+sold_date:
+price: ""
+listing_url: ""
 
-price: "" # Shown only when status is for-sale, e.g. "$180 CAD"
-listing_url: "" # Facebook Marketplace (or other) listing link
+# Links and display
+twdb_url: "https://typewriterdatabase.com/1971-royal-mercury.28778.typewriter"
+tags: []
+cover: ""
 
-twdb_url: "https://typewriterdatabase.com/1971-royal-mercury.28778.typewriter" # Link to this machine's Typewriter Database gallery
-cover:
-  "" # Optional: photo file name to use as the gallery cover.
-  # Default: the first photo alphabetically.
+repairs: []
 ---
 
 ## Notes
 
 How it types, its history, quirks, anything worth remembering.
-
-## Repair log

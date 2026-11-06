@@ -1,68 +1,165 @@
 ---
 layout: default
 ---
-{%- assign machines = site.machines | sort: "title" -%}
+{%- assign machines = site.machines -%}
 
-{%- comment -%} Gather every tag used across all machines {%- endcomment -%}
+{%- comment -%} Work out which filter values are actually in use {%- endcomment -%}
+{%- assign used_status = "" | split: "" -%}
+{%- assign used_size = "" | split: "" -%}
+{%- assign used_functional = "" | split: "" -%}
 {%- assign all_tags = "" | split: "" -%}
+{%- assign any_favorite = false -%}
 {%- for m in machines -%}
-  {%- for t in m.tags -%}
-    {%- assign all_tags = all_tags | push: t -%}
-  {%- endfor -%}
+  {%- assign used_status = used_status | push: m.status -%}
+  {%- if m.size_class and m.size_class != "" %}{% assign used_size = used_size | push: m.size_class %}{% endif -%}
+  {%- if m.functional and m.functional != "" %}{% assign used_functional = used_functional | push: m.functional %}{% endif -%}
+  {%- for t in m.tags %}{% assign all_tags = all_tags | push: t %}{% endfor -%}
+  {%- if m.favorite == true %}{% assign any_favorite = true %}{% endif -%}
 {%- endfor -%}
 {%- assign all_tags = all_tags | uniq | sort -%}
 
-<section class="filters" aria-label="Filter the collection">
-  <input type="search" id="search" placeholder="Search make, model, typeface, serial…" aria-label="Search">
+<section class="filters" aria-label="Filter and sort the collection">
+  <div class="filter-top">
+    <input type="search" id="search" placeholder="Search make, model, typeface, serial…" aria-label="Search">
+    <select id="sort" aria-label="Sort by">
+      <option value="acquired-desc">Newest acquisitions first</option>
+      <option value="acquired-asc">Oldest acquisitions first</option>
+      <option value="year-asc">Year made: oldest first</option>
+      <option value="year-desc">Year made: newest first</option>
+      <option value="make">Make &amp; model A–Z</option>
+      <option value="feel">Typing feel: best first</option>
+    </select>
+  </div>
 
   <div class="filter-group">
     <span class="filter-label">Status</span>
     {%- for s in site.data.statuses %}
-    <button type="button" class="chip" data-status="{{ s.key }}" data-default-hidden="{{ s.hidden_by_default }}" aria-pressed="false">{{ s.label }}</button>
+    {%- if used_status contains s.key %}
+    <button type="button" class="chip" data-group="status" data-value="{{ s.key }}" data-color style="--chip-color: {{ s.color }}" aria-pressed="false">{{ s.icon }} {{ s.label }}</button>
+    {%- endif %}
+    {%- endfor %}
+    {%- if any_favorite %}
+    <button type="button" class="chip" data-group="favorite" data-value="true" data-color style="--chip-color: var(--star)" aria-pressed="false">★ Favorites</button>
+    {%- endif %}
+  </div>
+
+  {%- if used_size.size > 0 %}
+  <div class="filter-group">
+    <span class="filter-label">Size</span>
+    {%- for s in site.data.fields.size_class %}
+    {%- if used_size contains s.key %}
+    <button type="button" class="chip" data-group="size" data-value="{{ s.key }}" aria-pressed="false">{{ s.label }}</button>
+    {%- endif %}
     {%- endfor %}
   </div>
+  {%- endif %}
+
+  {%- if used_functional.size > 0 %}
+  <div class="filter-group">
+    <span class="filter-label">Functional</span>
+    {%- for f in site.data.fields.functional %}
+    {%- if used_functional contains f.key %}
+    <button type="button" class="chip" data-group="functional" data-value="{{ f.key }}" data-color style="--chip-color: {{ f.color }}" aria-pressed="false">{{ f.icon }} {{ f.label }}</button>
+    {%- endif %}
+    {%- endfor %}
+  </div>
+  {%- endif %}
 
   {%- if all_tags.size > 0 %}
   <div class="filter-group">
     <span class="filter-label">Tags</span>
     {%- for t in all_tags %}
-    <button type="button" class="chip" data-tag="{{ t }}" aria-pressed="false">{{ t }}</button>
+    <button type="button" class="chip" data-group="tag" data-value="{{ t }}" aria-pressed="false">{{ t }}</button>
     {%- endfor %}
   </div>
   {%- endif %}
 
-  <p class="result-count" id="result-count" aria-live="polite"></p>
+  <div class="filter-group">
+    <p class="result-line" id="result-line" aria-live="polite"></p>
+    <button type="button" class="chip chip-clear" id="clear-filters" hidden>Clear filters</button>
+  </div>
 </section>
 
 <section class="gallery" id="gallery">
   {%- for m in machines %}
   {%- include photos.html machine=m -%}
-  {%- assign status_info = site.data.statuses | where: "key", m.status | first %}
+  {%- assign status_info = site.data.statuses | where: "key", m.status | first -%}
+  {%- assign functional_info = site.data.fields.functional | where: "key", m.functional | first -%}
+  {%- assign size_info = site.data.fields.size_class | where: "key", m.size_class | first -%}
+  {%- assign private = site.data.private[m.slug] -%}
+
+  {%- capture acquired_iso %}{% if m.acquired %}{{ m.acquired | date: "%Y-%m-%d" }}{% endif %}{% endcapture -%}
+  {%- capture sold_iso %}{% if m.sold_date %}{{ m.sold_date | date: "%Y-%m-%d" }}{% endif %}{% endcapture -%}
+  {%- capture acquired_text -%}
+    {%- if m.acquired -%}
+      {%- if m.acquired_approx == true %}c. {{ m.acquired | date: "%b %Y" }}{% else %}{{ m.acquired | date: "%b %-d, %Y" }}{% endif -%}
+    {%- endif -%}
+  {%- endcapture -%}
+
   <a class="card"
      href="{{ m.url | relative_url }}"
      data-status="{{ m.status }}"
+     data-size="{{ m.size_class }}"
+     data-functional="{{ m.functional }}"
      data-tags="{{ m.tags | join: '|' }}"
-     data-search="{{ m.title | append: ' ' | append: m.nickname | append: ' ' | append: m.make | append: ' ' | append: m.model | append: ' ' | append: m.year | append: ' ' | append: m.serial | append: ' ' | append: m.typeface | append: ' ' | append: m.color | append: ' ' | append: m.made_in | downcase | escape }}">
+     data-favorite="{% if m.favorite == true %}true{% endif %}"
+     data-acquired="{{ acquired_iso }}"
+     data-year="{{ m.year }}"
+     data-feel="{{ m.typing_feel }}"
+     data-sort-name="{{ m.make | append: ' ' | append: m.model | downcase | escape }}"
+     data-search="{{ m.title | append: ' ' | append: m.nickname | append: ' ' | append: m.make | append: ' ' | append: m.model | append: ' ' | append: m.year | append: ' ' | append: m.serial | append: ' ' | append: m.typeface | append: ' ' | append: m.color | append: ' ' | append: m.made_in | append: ' ' | append: m.purchased_from | downcase | escape }}">
     <div class="card-image">
       {%- if cover_path and cover_path != "" %}
       <img src="{{ cover_path | relative_url }}" alt="{{ m.title }}" loading="lazy">
       {%- else %}
       <div class="no-photos">No photos yet</div>
       {%- endif %}
-      <span class="status status-{{ m.status }}">{{ status_info.label | default: m.status }}</span>
+      <div class="card-badges">
+        <span class="badge" style="--badge-color: {{ status_info.color | default: '#555' }}">
+          {%- if status_info.icon and status_info.icon != "" %}<span class="badge-icon" aria-hidden="true">{{ status_info.icon }}</span>{% endif -%}
+          {{ status_info.label | default: m.status }}
+        </span>
+        {%- if functional_info and m.functional != "working" %}
+        <span class="badge" style="--badge-color: {{ functional_info.color }}"><span class="badge-icon" aria-hidden="true">{{ functional_info.icon }}</span>{{ functional_info.label }}</span>
+        {%- endif %}
+        {%- if m.favorite == true %}<span class="star card-star" title="Favorite">★</span>{% endif %}
+      </div>
     </div>
     <div class="card-body">
       <h2>{{ m.title }}</h2>
       {%- if m.nickname and m.nickname != "" %}<p class="nickname">&ldquo;{{ m.nickname }}&rdquo;</p>{% endif %}
+
       {%- assign meta = "" | split: "" -%}
       {%- if m.typeface and m.typeface != "" %}{% assign meta = meta | push: m.typeface %}{% endif -%}
-      {%- if m.status == "for-sale" and m.price and m.price != "" %}{% assign meta = meta | push: m.price %}{% endif -%}
+      {%- if m.pitch %}{% capture p %}{{ m.pitch }} cpi{% endcapture %}{% assign meta = meta | push: p %}{% endif -%}
+      {%- if size_info %}{% assign meta = meta | push: size_info.label %}{% endif -%}
       {%- if meta.size > 0 %}
       <p class="card-meta">{{ meta | join: " · " }}</p>
       {%- endif %}
+
+      {%- if acquired_text != "" %}
+      <p class="card-meta">
+        {%- if m.status == "sold" and sold_iso != "" -%}
+          Owned {{ acquired_text }} – {{ m.sold_date | date: "%b %-d, %Y" }}
+        {%- else -%}
+          Acquired {{ acquired_text }}<span data-since="{{ acquired_iso }}" data-template=" · {d} ago"></span>
+        {%- endif -%}
+      </p>
+      {%- endif %}
+
+      {%- if m.status == "for-sale" and m.price and m.price != "" %}
+      <p class="card-meta"><strong>For sale: {{ m.price }}</strong></p>
+      {%- endif %}
+
+      {%- if private and private.paid %}
+      <p class="card-meta" title="Private: only visible with npm run serve:private">🔒 Paid ${{ private.paid }}{% if private.sold_for %} · sold ${{ private.sold_for }}{% endif %}</p>
+      {%- endif %}
+
+      {%- if m.tags.size > 0 %}
       <p class="card-tags">
         {%- for t in m.tags %}<span class="tag">{{ t }}</span>{% endfor -%}
       </p>
+      {%- endif %}
     </div>
   </a>
   {%- endfor %}
@@ -70,4 +167,4 @@ layout: default
 
 <p class="empty-state" id="empty-state" hidden>No machines match those filters.</p>
 
-<script src="{{ '/assets/js/filter.js' | relative_url }}" defer></script>
+<script src="{{ '/assets/js/gallery.js' | relative_url }}" defer></script>

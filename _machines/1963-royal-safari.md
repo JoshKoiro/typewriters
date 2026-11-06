@@ -1,34 +1,51 @@
 ---
-title: "1963 Royal Safari" # What visitors see. Year + make + model reads well.
-nickname: "" # Optional name you've given the machine
+title: "1963 Royal Safari"
+nickname: ""
 make: "Royal"
 model: "Safari"
-year: "1963" # e.g. "1965", or "c. 1970" if estimated
+year: 1963
+year_approx: false
 serial: "SA5453008"
-typeface: "Pica" # e.g. "Pica", "Elite", "Script"
-pitch: "10" # e.g. "10 cpi"
-color: "cream"
 made_in: "USA"
-condition: "" # Short summary, e.g. "Working, cosmetic wear"
-acquired: "July 19th, 2026" # e.g. "2026" or "June 2026, estate sale"
+color: "cream"
+
+# Specs
+typeface: "Pica"
+pitch: 10
+size_class: "portable" # ultra-portable | portable | semi-portable | standard
+keyboard: "QWERTY"
+carriage_width:
+spools: ""
+features: []
+weight: ""
+
+# Condition
+functional: working # working | needs-work | parts-only
+has_case: true
+typing_feel: # 1 to 5
+favorite: false
+
+# Ownership
+status: collection # collection | for-sale | sold | sighting
+acquired: 2026-07-19
+acquired_approx: false
 purchased_from: "Facebook Marketplace"
-status: collection # collection | for-sale | sold | sighting (see _data/statuses.yml)
-tags: [] # e.g. [ultra-portable, 1960s, script]
+sold_date:
+price: ""
+listing_url: ""
 
-price: "" # Shown only when status is for-sale, e.g. "$180 CAD"
-listing_url: "" # Facebook Marketplace (or other) listing link
+# Links and display
+twdb_url: "https://typewriterdatabase.com/1963-royal-safari.28779.typewriter"
+tags: []
+cover: ""
 
-twdb_url: "https://typewriterdatabase.com/1963-royal-safari.28779.typewriter" # Link to this machine's Typewriter Database gallery
-cover:
-  "" # Optional: photo file name to use as the gallery cover.
-  # Default: the first photo alphabetically.
+repairs:
+  - date: 2026-10-15
+    work: >-
+      attempted to clean grime out of ribbon vibrator that was sticking.
 ---
 
 ## Notes
 
 Purchased on July 19th, 2026 on Facebook Marketplace.
 Good functional condition. The external body has chipped paint and damage to the logos and emblems.
-
-## Repair log
-
-- 2026-10-15: attempted to clean grime out of ribbon vibrator that was sticking.

@@ -10,15 +10,49 @@
   {%- if page.og_image %}
   <meta property="og:image" content="{{ page.og_image | absolute_url }}">
   {%- endif %}
+
+  {%- comment -%} Pick the colour theme before anything is drawn, so the page never flashes. {%- endcomment %}
+  <script>
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem('theme'); } catch (e) {}
+      var dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+    })();
+  </script>
+
+  {%- comment -%} Fonts come from _data/fonts.yml. Change them there, not here. {%- endcomment %}
+  {%- assign fonts = site.data.fonts -%}
+  {%- assign font_specs = "" | split: "" -%}
+  {%- if fonts.heading.google != "" %}{% assign font_specs = font_specs | push: fonts.heading.google %}{% endif -%}
+  {%- if fonts.body.google != "" %}{% assign font_specs = font_specs | push: fonts.body.google %}{% endif -%}
+  {%- if fonts.ui.google != "" %}{% assign font_specs = font_specs | push: fonts.ui.google %}{% endif -%}
+  {%- assign font_specs = font_specs | uniq -%}
+  {%- if font_specs.size > 0 %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family={{ font_specs | join: '&family=' }}&display=swap" rel="stylesheet">
+  {%- endif %}
+  <style>
+    :root {
+      --font-heading: "{{ fonts.heading.name }}", {{ fonts.heading.fallback }};
+      --font-body: "{{ fonts.body.name }}", {{ fonts.body.fallback }};
+      --font-ui: "{{ fonts.ui.name }}", {{ fonts.ui.fallback }};
+    }
+  </style>
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+  <script src="{{ '/assets/js/site.js' | relative_url }}" defer></script>
 </head>
 <body>
   <header class="site-header">
-    <a class="site-title" href="{{ '/' | relative_url }}">{{ site.title }}</a>
-    <p class="site-tagline">{{ site.description }}</p>
+    <div class="site-header-text">
+      <a class="site-title" href="{{ '/' | relative_url }}">{{ site.title }}</a>
+      <p class="site-tagline">{{ site.description }}</p>
+    </div>
+    <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Switch between light and dark mode">
+      <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 1.5v3M12 19.5v3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M1.5 12h3M19.5 12h3M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></svg>
+    </button>
   </header>
 
   <main>

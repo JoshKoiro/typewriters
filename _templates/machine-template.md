@@ -1,37 +1,53 @@
 ---
-# Copy this file into _machines/ and rename it, e.g. _machines/1965-brother-valiant.md
-# The file name (without .md) is the machine's "slug": its photos go in photos/<slug>/
-# and its page lives at /machines/<slug>/.
-# Leave any field you don't know blank. Blank fields are hidden on the page.
-
-title: "1965 Brother Valiant"     # What visitors see. Year + make + model reads well.
-nickname: ""                      # Optional name you've given the machine
+# Field reference: README.md > "Machine fields". Leave unknown fields blank; blanks are hidden.
+title: ""                 # year + make + model, e.g. "1965 Brother Valiant"
+nickname: ""
 make: ""
 model: ""
-year: ""                          # e.g. "1965", or "c. 1970" if estimated
+year:                     # a number, e.g. 1965
+year_approx: false        # true if the year is an estimate (shows "c. 1965")
 serial: ""
-typeface: ""                      # e.g. "Pica", "Elite", "Script"
-pitch: ""                         # e.g. "10 cpi"
-color: ""
 made_in: ""
-condition: ""                     # Short summary, e.g. "Working, cosmetic wear"
-acquired: ""                      # e.g. "2026" or "June 2026, estate sale"
+color: ""
 
-status: collection                # collection | for-sale | sold | sighting (see _data/statuses.yml)
-tags: []                          # e.g. [ultra-portable, 1960s, script]
+# Specs
+typeface: ""              # e.g. "Pica", "Elite", "#84 Bodoni Elite" (quote anything with #)
+pitch:                    # characters per inch, e.g. 10 or 12
+size_class: ""            # ultra-portable | portable | semi-portable | standard
+keyboard: "QWERTY"
+carriage_width:           # inches of paper it takes, e.g. 9
+spools: ""                # ribbon spool type, e.g. "universal 2-inch"
+features: []              # e.g. [tabulator, touch control, paper support, two-color ribbon]
+weight: ""                # e.g. "8.5 lb"
 
-price: ""                         # Shown only when status is for-sale, e.g. "$180 CAD"
-listing_url: ""                   # Facebook Marketplace (or other) listing link
+# Condition
+functional: working       # working | needs-work | parts-only
+has_case: false           # true | false
+typing_feel:              # 1 to 5
+favorite: false
 
-twdb_url: ""                      # Link to this machine's Typewriter Database gallery
-cover: ""                         # Optional: photo file name to use as the gallery cover.
-                                  # Default: the first photo alphabetically.
+# Ownership
+status: collection        # collection | for-sale | sold | sighting
+acquired:                 # date as YYYY-MM-DD, e.g. 2026-10-11 (no quotes)
+acquired_approx: false    # true if you only know the month (use the 1st)
+purchased_from: ""        # e.g. "Antique Store", "Facebook Marketplace"
+sold_date:                # YYYY-MM-DD, once it's sold
+price: ""                 # asking price, shown while status is for-sale
+listing_url: ""
+
+# Links and display
+twdb_url: ""
+tags: []
+cover: ""                 # shot to use as the gallery cover, e.g. front (default: thumbnail)
+
+# Repair log: one entry per job, newest last. Shown as a table on the page.
+repairs: []
+#  - date: 2026-11-03
+#    work: >-
+#      Replaced the feed rollers with silicone tubing.
+#      Can run over several lines.
 ---
 
 ## Notes
 
 How it types, its history, quirks, anything worth remembering.
-
-## Repair log
-
-- 2026-11: Cleaned, oiled, new ribbon.  (example: delete this section if there's nothing to log)

@@ -44,6 +44,8 @@ Press `Ctrl+C` to stop the server.
 |---------|--------------|
 | `npm run setup` | Installs everything: Node packages (sharp) and Ruby gems (Jekyll). Run after cloning. |
 | `npm run serve` | Local preview at http://localhost:4000/typewriters/ with live reload |
+| `npm run serve:private` | Same, plus your private ledger details (🔒) on each machine. Local only. |
+| `npm run ledger` | Prints the private ledger joined with the machine data, with totals |
 | `npm run build` | Builds the site into `_site/` without serving it. Catches template errors. |
 | `npm run clean` | Deletes the `_site/` build output and cache. Try this if the preview acts strangely. |
 | `npm run new -- <slug>` | Creates a new machine, e.g. `npm run new -- 1965-brother-valiant` |
@@ -52,7 +54,8 @@ Press `Ctrl+C` to stop the server.
 | `npm run photos` | Processes photos: `originals/` → `photos/` (order, resize, strip metadata) |
 | `npm run photos:force` | Reprocesses *all* photos, including ones already done |
 | `npm run check:photos` | Makes sure no published photo still has GPS or other metadata |
-| `npm run check` | `check:photos` + `build`: everything that should pass before publishing |
+| `npm run check:private` | Makes sure the private ledger copy can't be committed |
+| `npm run check` | `check:photos` + `check:private` + `build`: everything that should pass before publishing |
 | `npm run deploy` | Runs `check`, then `git push` if it passes. **Commit first.** |
 
 The `--` in `npm run new -- <slug>` is required. It passes the slug through npm to the script.
@@ -99,8 +102,8 @@ listing_url: "https://www.facebook.com/marketplace/item/..."
 Its page then shows a "for sale" box linking to the listing. To share everything that's for sale:
 **https://joshkoiro.github.io/typewriters/?status=for-sale**
 
-Once it's sold, change it to `status: sold`. **Don't delete the file**, so the history stays.
-Sold machines are hidden from the gallery by default, but visitors can switch them on.
+Once it's sold, change it to `status: sold` and set `sold_date:`. **Don't delete the file**, so the
+history stays. Record what you got for it in the private ledger (`sold_for:`).
 
 ### Edit details or notes
 
@@ -115,7 +118,10 @@ written in Markdown (`## Heading`, `- bullet`, `**bold**`).
 _machines/<slug>.md       one file per typewriter: details at the top, notes below
 photos/<slug>/            web-ready photos (committed to git, published)
 originals/<slug>/         full-size camera originals (NOT in git, back these up separately!)
-_data/statuses.yml        the list of statuses and their labels
+_data/statuses.yml        statuses: labels, emoji, colours
+_data/fields.yml          allowed values for size_class and functional
+_data/fonts.yml           the site's fonts (change typography here)
+_data/private.yml         LOCAL copy of the private ledger (git-ignored, see "Private data")
 _templates/               blank machine file used by `npm run new`
 scripts/                  the Node scripts behind the npm commands
 _layouts/, _includes/     page templates (Jekyll / Liquid)
@@ -129,22 +135,74 @@ everything together: the photos folder, the originals folder and the page URL
 (`/machines/1971-royal-mercury/`). If a machine shows "No photos yet", check that the
 photo folder name matches the slug exactly. `npm run check:photos` warns about mismatches.
 
+### Machine fields
+
+Every field is optional; blank ones are hidden on the site. Dates are written `YYYY-MM-DD`
+**without quotes**, numbers without quotes, and text in quotes (always quote text containing `#`).
+
+| Field | Example | Notes |
+|-------|---------|-------|
+| `title` | `"1956 Olivetti Lettera 22"` | Shown everywhere. Year + make + model reads well. |
+| `nickname` | `"Olivia (Liv)"` | |
+| `make`, `model` | `"Olivetti"`, `"Lettera 22"` | "Make & model A–Z" sorts on these |
+| `year` | `1956` | A number, so it sorts properly |
+| `year_approx` | `true` | Shows the year as "c. 1956" |
+| `serial`, `made_in`, `color` | `"327548"`, `"Italy"`, `"brown"` | |
+| `typeface` | `"#84 Bodoni Elite"` | |
+| `pitch` | `12` | Characters per inch, shown as "12 cpi" |
+| `size_class` | `ultra-portable` | `ultra-portable`, `portable`, `semi-portable`, `standard`. Gallery filter. |
+| `keyboard` | `"QWERTY"` | |
+| `carriage_width` | `9` | Inches of paper it takes |
+| `spools` | `"universal 2-inch"` | Which ribbon spools it uses |
+| `features` | `[tabulator, paper support]` | |
+| `weight` | `"8 lb"` | |
+| `functional` | `working` | `working`, `needs-work`, `parts-only`. Gallery filter + badge. |
+| `has_case` | `true` | `true` or `false` |
+| `typing_feel` | `4` | 1–5, shown as dots. "Typing feel" sort. |
+| `favorite` | `true` | ★ on the card, and a "Favorites" filter |
+| `status` | `collection` | See statuses below |
+| `acquired` | `2026-11-02` | Default sort (newest first). Shows "4 weeks ago" etc. |
+| `acquired_approx` | `true` | Only the month is known: use the 1st, shows "c. Nov 2026" |
+| `purchased_from` | `"Facebook Marketplace"` | The general kind of place. Specifics go in the private ledger. |
+| `sold_date` | `2026-09-19` | Shows the sold date and how long you owned it |
+| `price`, `listing_url` | `"$140"`, `"https://…"` | Only shown while `status: for-sale` |
+| `twdb_url` | `"https://typewriterdatabase.com/…"` | |
+| `tags` | `[glass-keys, script]` | Free-form; each becomes a filter |
+| `cover` | `front` | Shot to use as the gallery cover (default: thumbnail) |
+| `repairs` | see below | Shown as a table under the notes |
+
+Allowed values and display labels for `size_class` and `functional` live in `_data/fields.yml`.
+
+**Repair log:** one entry per job. `>-` lets the text run over several lines:
+
+```yaml
+repairs:
+  - date: 2026-11-03
+    work: >-
+      Replaced the flat-spotted feed rollers with 3/8" OD silicone tubing.
+  - date: 2026-11-10
+    work: Adjusted the escapement.
+```
+
+Anything in the front matter is **public**. GitHub shows the raw file even if the site doesn't
+display a field. Prices paid, sellers and places go in the private ledger (below).
+
 ### Statuses
 
-| `status:` | Shown as | Visible by default |
-|-----------|----------|--------------------|
-| `collection` | In collection | yes |
-| `for-sale` | For sale | yes |
-| `sold` | Sold | no |
-| `sighting` | Sighting | no |
+| `status:` | Shown as |
+|-----------|----------|
+| `collection` | ⌨️ In collection (green) |
+| `for-sale` | 🏷️ For sale (red) |
+| `sold` | 🤝 Sold (grey) |
+| `sighting` | 👀 Sighting (blue) |
 
-To add one (e.g. `wanted`), add it to `_data/statuses.yml`. For a badge colour, add a
-`.status-wanted { background: ... }` rule in `assets/css/style.css`.
+All machines are shown by default; the filters narrow it down. Labels, emoji and colours are in
+`_data/statuses.yml`. Add a status there (e.g. `wanted`) and it gets a filter automatically.
 
 ### Tags
 
-Free-form, e.g. `tags: [ultra-portable, 1960s, script]`. Every tag used anywhere becomes a
-filter button automatically. Keep them lowercase with hyphens so they stay consistent.
+Free-form, e.g. `tags: [glass-keys, script]`. Every tag used anywhere becomes a filter button
+automatically. Keep them lowercase with hyphens so they stay consistent.
 
 ### Shareable links
 
@@ -152,10 +210,61 @@ The gallery keeps its filters in the URL:
 
 - `?status=for-sale`: only machines for sale
 - `?tag=ultra-portable`: only ultra-portables
-- `?status=collection,for-sale,sold`: including sold machines
+- `?size=ultra-portable&functional=working`: filters combine
+- `?sort=year-asc`: oldest machines first (also `acquired-asc`, `year-desc`, `make`, `feel`)
 - `?q=olivetti`: a search
 
 ---
+
+## Private data (prices, sellers, places)
+
+Things that shouldn't be public live in a **separate private repo**, `typewriters-private`,
+in a single file, `ledger.yml`, keyed by machine slug:
+
+```yaml
+olivia:
+  paid: 85
+  bought_at: "Lancaster, PA"
+  seller: "Original owner's wife"
+  sold_for:
+  sold_to: ""
+  notes: ""
+```
+
+**Setup (once):** create a **private** GitHub repo called `typewriters-private`, then clone it
+**next to** this one so the folders sit side by side (`code/typewriters` and
+`code/typewriters-private`). If you keep it elsewhere, set the `TYPEWRITERS_PRIVATE` environment
+variable to its folder.
+
+**How the two connect:**
+- `npm run serve:private` copies the ledger into `_data/private.yml` and starts the preview. Each
+  machine page then shows a 🔒 box with the private details, and cards show what you paid.
+- `npm run serve` removes that copy first, so you see exactly what the public sees.
+- `npm run ledger` prints a table of every machine with paid and sold prices, plus totals, and
+  points out machines missing from the ledger.
+- `npm run new -- <slug>` adds an empty ledger entry for the new machine.
+
+**Why it can't leak:** GitHub builds the public site from this repo, which never contains the
+ledger. The local copy `_data/private.yml` is git-ignored, and `npm run check` (so also
+`npm run deploy`) fails if it is ever tracked by git.
+
+Commit and push the private repo too. That's its backup.
+
+## Look and feel
+
+**Fonts:** all in `_data/fonts.yml`. There are three roles: `heading`, `body` and `ui` (labels,
+filters, badges). To change one, edit its `name` and `google` lines. The file has instructions
+and a list of fonts to try. Text sizes are the `--text-*` variables at the top of
+`assets/css/style.css`.
+
+**Colours:** the light and dark palettes are at the top of `assets/css/style.css`. Status colours
+are in `_data/statuses.yml`, and functional colours in `_data/fields.yml`.
+
+**Light/dark mode:** follows the visitor's system setting until they click the toggle (top right),
+then remembers their choice.
+
+**Gallery photos:** `--card-image-fit` in `style.css`. `cover` fills the frame and crops the edges;
+`contain` shows the whole photo with bars around it. Photos are never stretched either way.
 
 ## Photo naming convention
 

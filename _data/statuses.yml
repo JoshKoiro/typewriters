@@ -1,22 +1,28 @@
 # Status values used in each machine's `status:` field.
-# key   = what you type in the machine file
-# label = what visitors see
-# hidden_by_default = not shown in the gallery until a visitor selects that status
+#   key   = what you type in the machine file
+#   label = what visitors see
+#   icon  = emoji shown on the badge (any emoji, or "" for none)
+#   color = badge colour (any CSS colour; mid-tones work in both light and dark mode)
 #
-# Add new statuses here (e.g. "wanted", "on-loan") and they appear in the filters automatically.
+# All statuses are shown in the gallery by default; visitors narrow it down with the filters.
+# Add a new status here (e.g. "wanted") and it appears in the filters automatically.
 
 - key: collection
   label: In collection
-  hidden_by_default: false
+  icon: "⌨️"
+  color: "#2f7d4f"
 
 - key: for-sale
   label: For sale
-  hidden_by_default: false
+  icon: "🏷️"
+  color: "#c0392b"
 
 - key: sold
   label: Sold
-  hidden_by_default: true
+  icon: "🤝"
+  color: "#7a746b"
 
 - key: sighting
   label: Sighting
-  hidden_by_default: true
+  icon: "👀"
+  color: "#3b6ea5"
