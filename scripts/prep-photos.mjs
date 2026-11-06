@@ -2,35 +2,37 @@
 /**
  * Prepare typewriter photos for the website.
  *
- * For every image in the input folder (default: originals/), this script:
- *   1. Rotates it upright using the camera's orientation tag (so nothing ends up sideways),
- *   2. Resizes it so the LONGER side is at most 2000 px (smaller images are never enlarged),
- *   3. Strips ALL metadata (EXIF, GPS location, camera/phone model, timestamps, XMP, comments),
- *   4. Saves it into the matching folder under photos/ with a web-safe file name.
+ * For every machine folder in originals/ (originals/<slug>/), this script:
+ *   1. Sorts the photos into display order (see photo-order.mjs: thumbnail, front, side, back,
+ *      top, bottom, details, case shots, then everything else alphabetically),
+ *   2. Rotates each one upright using the camera's orientation tag,
+ *   3. Resizes it so the LONGER side is at most 2000 px (smaller images are never enlarged),
+ *   4. Strips ALL metadata (EXIF, GPS location, camera/phone model, timestamps, XMP, comments),
+ *   5. Saves it to photos/<slug>/ with a number giving its position:
+ *        originals/1971-royal-mercury/thumbnail.jpg -> photos/1971-royal-mercury/01-thumbnail.jpg
+ *        originals/1971-royal-mercury/front.jpg     -> photos/1971-royal-mercury/02-front.jpg
+ *   6. Removes old web copies in photos/<slug>/ that no longer match an original
+ *      (e.g. after a rename, or when a new photo shifts the numbering).
  *
- * The folder structure is preserved, so put each machine's originals in a folder named after
- * its slug (the machine's file name in _machines/ without .md):
+ * photos/<slug>/ is a generated mirror of originals/<slug>/: don't edit it by hand.
+ * Folders in photos/ with no matching originals folder are left alone.
  *
- *     originals/1947-smith-corona-sterling/IMG_4821.JPG
- *       -> photos/1947-smith-corona-sterling/img_4821.jpg
- *
- * Colours are converted to standard sRGB, which is what browsers expect.
- *
- * Requires Node.js 20.9+.
+ * Colours are converted to standard sRGB, which is what browsers expect. Requires Node.js 20.9+.
  *
  * Usage (from the repo root):
- *     npm install                      # once
- *     npm run photos                   # originals/ -> photos/
- *     npm run photos -- --force        # re-process files that already exist
+ *     npm run photos                   # process new/changed photos
+ *     npm run photos:force             # re-process everything
  *     node scripts/prep-photos.mjs SRC DEST --max 2000 --quality 90
  */
 
-import { readdir, mkdir, access } from 'node:fs/promises';
+import { readdir, mkdir, access, unlink } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
+import { comparePhotoNames, isConventionalName } from './photo-order.mjs';
 
 const INPUT_EXTS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.tif', '.tiff', '.heic', '.heif']);
+const OUTPUT_EXTS = new Set(['.jpg', '.png']);
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 // ---------- Arguments ----------
@@ -52,37 +54,24 @@ const dest = path.resolve(positional[1] ?? path.join(repo, 'photos'));
 // ---------- Helpers ----------
 const exists = p => access(p).then(() => true, () => false);
 
-/** Lowercase, spaces -> hyphens, drop anything unusual. Keeps names URL-friendly. */
+/** Lowercase, spaces/underscores -> hyphens, drop anything unusual. */
 function webName(file) {
-  const stem = path.parse(file).name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9._-]/g, '');
+  const stem = path.parse(file).name.toLowerCase().replace(/[\s_]+/g, '-').replace(/[^a-z0-9-]/g, '');
   return stem || 'photo';
 }
 
-async function* walk(dir) {
-  for (const entry of await readdir(dir, { withFileTypes: true })) {
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) yield* walk(full);
-    else if (INPUT_EXTS.has(path.extname(entry.name).toLowerCase())) yield full;
-  }
-}
-
-async function processPhoto(file, destBase) {
-  const meta = await sharp(file).metadata();
-  const asPng = path.extname(file).toLowerCase() === '.png' || meta.hasAlpha;
-  const out = destBase + (asPng ? '.png' : '.jpg');
-  await mkdir(path.dirname(out), { recursive: true });
-
+async function processPhoto(file, out) {
   // sharp drops all metadata on output unless told to keep it, so EXIF/GPS/XMP never reach the file.
   let img = sharp(file)
     .rotate() // apply the EXIF orientation, then forget it
     .resize({ width: maxSide, height: maxSide, fit: 'inside', withoutEnlargement: true });
 
-  img = asPng
+  img = out.endsWith('.png')
     ? img.png({ compressionLevel: 9 })
     : img.jpeg({ quality, mozjpeg: true, progressive: true });
 
   const info = await img.toFile(out);
-  return { out, width: info.width, height: info.height };
+  return { width: info.width, height: info.height };
 }
 
 // ---------- Main ----------
@@ -91,28 +80,66 @@ if (!(await exists(src))) {
   process.exit(1);
 }
 
-let done = 0, skipped = 0, failed = 0, found = 0;
+let done = 0, skipped = 0, failed = 0, removed = 0, found = 0;
+const entries = await readdir(src, { withFileTypes: true });
 
-for await (const file of walk(src)) {
-  found++;
-  const rel = path.relative(src, file);
-  const destBase = path.join(dest, path.dirname(rel), webName(file));
+const loose = entries.filter(e => e.isFile() && INPUT_EXTS.has(path.extname(e.name).toLowerCase()));
+if (loose.length) {
+  console.log(`  NOTE  ${loose.length} photo(s) directly in ${path.basename(src)}/ were ignored: put them in a machine folder.`);
+}
 
-  if (!force && ((await exists(destBase + '.jpg')) || (await exists(destBase + '.png')))) {
-    skipped++;
-    continue;
+for (const folder of entries.filter(e => e.isDirectory()).map(e => e.name).sort()) {
+  const inDir = path.join(src, folder);
+  const outDir = path.join(dest, folder);
+  const files = (await readdir(inDir)).filter(f => INPUT_EXTS.has(path.extname(f).toLowerCase()));
+  if (!files.length) continue;
+  found += files.length;
+
+  // Sort into display order and assign numbered output names
+  files.sort((a, b) => comparePhotoNames(webName(a), webName(b)));
+  const width = Math.max(2, String(files.length).length);
+  const plan = [];
+  for (const [i, file] of files.entries()) {
+    const meta = await sharp(path.join(inDir, file)).metadata().catch(() => ({}));
+    const asPng = path.extname(file).toLowerCase() === '.png' || meta.hasAlpha;
+    const number = String(i + 1).padStart(width, '0');
+    plan.push({ file, out: path.join(outDir, `${number}-${webName(file)}${asPng ? '.png' : '.jpg'}`) });
   }
 
-  try {
-    const { out, width, height } = await processPhoto(file, destBase);
-    console.log(`  OK    ${rel}  ->  ${path.relative(path.dirname(dest), out)}  (${width}x${height})`);
-    done++;
-  } catch (err) {
-    const heicHint = /\.hei[cf]$/i.test(file) ? ' (HEIC not supported: export as JPEG, see README)' : '';
-    console.log(`  FAIL  ${rel}: ${err.message.split('\n')[0]}${heicHint}`);
-    failed++;
+  const nonStandard = files.filter(f => !isConventionalName(path.parse(f).name));
+  if (nonStandard.length) {
+    console.log(`  NOTE  ${folder}/ has names outside the convention (try: npm run rename): ${nonStandard.join(', ')}`);
+  }
+
+  await mkdir(outDir, { recursive: true });
+
+  // Remove stale web copies (renamed, re-numbered or deleted originals)
+  const expected = new Set(plan.map(p => path.basename(p.out)));
+  for (const f of await readdir(outDir)) {
+    if (OUTPUT_EXTS.has(path.extname(f).toLowerCase()) && !expected.has(f)) {
+      await unlink(path.join(outDir, f));
+      console.log(`  DEL   photos/${folder}/${f}`);
+      removed++;
+    }
+  }
+
+  for (const { file, out } of plan) {
+    const rel = `${folder}/${file}`;
+    if (!force && (await exists(out))) {
+      skipped++;
+      continue;
+    }
+    try {
+      const { width: w, height: h } = await processPhoto(path.join(inDir, file), out);
+      console.log(`  OK    ${rel}  ->  ${path.relative(path.dirname(dest), out).replaceAll('\\', '/')}  (${w}x${h})`);
+      done++;
+    } catch (err) {
+      const heicHint = /\.hei[cf]$/i.test(file) ? ' (HEIC not supported: export as JPEG, see README)' : '';
+      console.log(`  FAIL  ${rel}: ${err.message.split('\n')[0]}${heicHint}`);
+      failed++;
+    }
   }
 }
 
-if (found === 0) console.log(`No images found in ${src}`);
-console.log(`\n${done} processed, ${skipped} already done (use --force to redo), ${failed} failed.`);
+if (found === 0) console.log(`No photos found in machine folders under ${src}`);
+console.log(`\n${done} processed, ${skipped} already done (use --force to redo), ${removed} old copies removed, ${failed} failed.`);

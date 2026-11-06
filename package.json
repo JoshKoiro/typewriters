@@ -14,6 +14,7 @@
     "clean": "bundle exec jekyll clean",
 
     "new": "node scripts/new-machine.mjs",
+    "rename": "node scripts/rename-originals.mjs",
     "photos": "node scripts/prep-photos.mjs",
     "photos:force": "node scripts/prep-photos.mjs --force",
     "check:photos": "node scripts/check-photos.mjs",

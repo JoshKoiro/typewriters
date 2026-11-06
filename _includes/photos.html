@@ -1,8 +1,14 @@
 {%- comment -%}
   Collects the photos for one machine from /photos/<machine-slug>/.
   Usage: {% include photos.html machine=page %}
-  Sets: photo_list (array of paths, sorted), cover_path (string or empty)
-  The cover is the machine's `cover:` file if set, otherwise the first photo alphabetically.
+  Sets: photo_list (array of paths in display order), cover_path (string or empty)
+
+  prep-photos numbers the files in display order (01-thumbnail.jpg, 02-front.jpg, ...),
+  so sorting by file name gives the right order. The order itself is defined in
+  scripts/photo-order.mjs.
+
+  The cover is the first photo (normally the thumbnail). To use a different one, set
+  `cover:` in the machine file to the shot name without number or extension, e.g. cover: front
 {%- endcomment -%}
 {%- assign machine_slug = include.machine.slug -%}
 {%- assign photo_dir = "/photos/" | append: machine_slug | append: "/" -%}
@@ -16,8 +22,15 @@
   {%- endif -%}
 {%- endfor -%}
 {%- assign photo_list = photo_list | sort -%}
+{%- assign cover_path = photo_list | first -%}
 {%- if include.machine.cover and include.machine.cover != "" -%}
-  {%- assign cover_path = photo_dir | append: include.machine.cover -%}
-{%- else -%}
-  {%- assign cover_path = photo_list | first -%}
+  {%- for p in photo_list -%}
+    {%- assign shot = p | split: "/" | last | split: "." | first -%}
+    {%- assign shot_number = shot | split: "-" | first | append: "-" -%}
+    {%- assign shot_name = shot | remove_first: shot_number -%}
+    {%- if shot_name == include.machine.cover or shot == include.machine.cover -%}
+      {%- assign cover_path = p -%}
+      {%- break -%}
+    {%- endif -%}
+  {%- endfor -%}
 {%- endif -%}

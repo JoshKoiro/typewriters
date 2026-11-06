@@ -47,7 +47,9 @@ Press `Ctrl+C` to stop the server.
 | `npm run build` | Builds the site into `_site/` without serving it. Catches template errors. |
 | `npm run clean` | Deletes the `_site/` build output and cache. Try this if the preview acts strangely. |
 | `npm run new -- <slug>` | Creates a new machine, e.g. `npm run new -- 1965-brother-valiant` |
-| `npm run photos` | Processes new photos: `originals/` → `photos/` (resize, strip metadata) |
+| `npm run rename` | **Preview** renaming photos in `originals/` to the naming convention. Changes nothing. |
+| `npm run rename -- --apply` | Actually renames them |
+| `npm run photos` | Processes photos: `originals/` → `photos/` (order, resize, strip metadata) |
 | `npm run photos:force` | Reprocesses *all* photos, including ones already done |
 | `npm run check:photos` | Makes sure no published photo still has GPS or other metadata |
 | `npm run check` | `check:photos` + `build`: everything that should pass before publishing |
@@ -66,9 +68,9 @@ npm run new -- 1965-brother-valiant
 ```
 
 1. Fill in `_machines/1965-brother-valiant.md`. Blank fields are simply hidden on the site.
-2. Put the original photos in `originals/1965-brother-valiant/`.
-   Name them `01-front.jpg`, `02-side.jpg`, … to control the order. The first one is the
-   gallery cover, unless you set `cover:` in the machine file.
+2. Put the original photos in `originals/1965-brother-valiant/`, named by the
+   [photo naming convention](#photo-naming-convention) (`thumbnail.jpg`, `front.jpg`, …).
+   If you're not sure you named them right, run `npm run rename` to preview fixes.
 3. `npm run photos`
 4. `npm run serve` to check it looks right.
 5. Commit and publish (below).
@@ -155,14 +157,68 @@ The gallery keeps its filters in the URL:
 
 ---
 
+## Photo naming convention
+
+Name the files in `originals/<slug>/` after the shot. The site orders them automatically.
+
+```
+<shot>.jpg              thumbnail.jpg, front.jpg, type-sample.jpg, case-open.jpg
+<shot>-<variant>.jpg    front-open.jpg, thumbnail-paper-hold.jpg, typebars-2.jpg
+```
+
+- lowercase, words separated by **hyphens** (not underscores)
+- **no machine name** in the file name. The folder already says which machine it is.
+
+**Display order**
+
+| # | Shot | Notes |
+|---|------|-------|
+| 1 | `thumbnail` | The gallery cover |
+| 2 | `front` | |
+| 3 | `side` | |
+| 4 | `back` | |
+| 5 | `top` | |
+| 6 | `bottom` | |
+| 7 | `type-sample` | |
+| 8 | `serial` | |
+| 9 | `typebars` | |
+| 10 | `interior` | |
+| 11 | `case-closed` | |
+| 12 | `case-open` | machine sitting in the open case |
+| 13 | `case-empty` | |
+| … | anything else | alphabetically, after all of the above |
+
+Variants follow their shot: `front.jpg`, then `front-case-open.jpg`, `front-open.jpg`
+(the plain shot first, then variants alphabetically). Numbered variants sort naturally
+(`typebars`, `typebars-2`, `typebars-10`). Missing shots are simply skipped.
+
+The order lives in **`scripts/photo-order.mjs`**. To change it or add a standard shot, edit
+`PHOTO_ORDER` there and run `npm run photos:force`.
+
+**Cover photo:** the first photo, normally `thumbnail`. To use a different one, set `cover:`
+in the machine file to the shot name, e.g. `cover: "front"`.
+
+**Fixing names automatically:** `npm run rename` previews renaming everything in `originals/` to
+the convention. It removes machine-name prefixes (`Safari_front.jpg` → `front.jpg`), switches
+`_` to `-`, lowercases, and applies synonyms (`empty_case` → `case-empty`,
+`case_opened` → `case-open`, a lone `case` → `case-closed`). Nothing changes until you run
+`npm run rename -- --apply`. Folders where two files would end up with the same name are skipped.
+Synonyms are listed at the top of `scripts/rename-originals.mjs`.
+
 ## Photos and privacy
 
-`npm run photos` takes every image in `originals/` and, for each one:
+`npm run photos` takes every machine folder in `originals/`, puts the photos in
+[display order](#photo-naming-convention), and for each one:
 
 - rotates it upright,
 - resizes it so the longest side is 2000 px (smaller photos are never enlarged),
 - removes **all** metadata (GPS location, phone/camera model, timestamps),
-- converts colours to sRGB and saves a JPEG (PNG stays PNG) with a lowercase, URL-safe name.
+- converts colours to sRGB and saves a JPEG (PNG stays PNG),
+- numbers it by position: `photos/<slug>/01-thumbnail.jpg`, `02-front.jpg`, …
+
+`photos/<slug>/` is a **generated mirror** of `originals/<slug>/`. When you add, rename or delete
+an original, the next `npm run photos` renumbers the web copies and deletes the stale ones
+(it lists them as `DEL`). Don't edit `photos/` by hand.
 
 **Never copy photos straight into `photos/`.** Always go through `originals/` and the script.
 Phone photos taken at home contain your GPS coordinates, and this repo is public.

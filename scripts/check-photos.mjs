@@ -4,6 +4,7 @@
  *   - FAILS if any photo still carries EXIF, XMP or IPTC metadata (GPS location, camera info...)
  *   - warns about photos bigger than 2000 px on the long side (probably skipped prep-photos)
  *   - warns about photo folders that don't match any machine in _machines/ (typo in the folder name)
+ *   - warns about photos not named NN-name.jpg (copied in by hand instead of via prep-photos)
  *
  *   npm run check:photos
  *
@@ -45,6 +46,10 @@ for (const folder of await readdir(photosDir, { withFileTypes: true })) {
       console.log(`  FAIL  ${rel} still has ${found.join(', ').toUpperCase()} metadata.`);
       console.log(`        Delete it, put the original in originals/${folder.name}/ and run: npm run photos`);
       problems++;
+    }
+    if (!/^\d{2,}-[a-z0-9]+(-[a-z0-9]+)*\.(jpg|png)$/.test(file)) {
+      console.log(`  WARN  ${rel} isn't named like prep-photos output (NN-name.jpg): it won't sort correctly`);
+      warnings++;
     }
     if (Math.max(meta.width, meta.height) > MAX) {
       console.log(`  WARN  ${rel} is ${meta.width}x${meta.height}, larger than ${MAX}px`);
