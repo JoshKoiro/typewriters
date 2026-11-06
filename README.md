@@ -20,7 +20,7 @@ photos/<slug>/        web-ready photos for each machine (committed)
 originals/<slug>/     your full-size camera originals (NOT committed, see .gitignore)
 _data/statuses.yml    the list of statuses (In collection, For sale, Sold, Sighting)
 _templates/           blank machine file to copy
-scripts/prep_photos.py  resizes photos and strips their metadata
+scripts/prep-photos.mjs resizes photos and strips their metadata (npm run photos)
 ```
 
 A machine's **slug** is its file name without `.md`, e.g. `1971-royal-mercury`.
@@ -39,20 +39,25 @@ Name them `01-front.jpg`, `02-side.jpg`, … to control the order, or set `cover
 
 ## Photos: resize + strip metadata
 
+Needs Node.js 18 or newer.
+
 ```
-pip install pillow pillow-heif     # once; pillow-heif is only for iPhone .HEIC files
-python scripts/prep_photos.py      # originals/ -> photos/
+npm install          # once, installs sharp
+npm run photos       # originals/ -> photos/
 ```
 
 For each photo the script:
 - rotates it upright,
 - resizes it so the longest side is 2000 px (smaller photos are left at their size),
-- removes **all** metadata: GPS location, phone/camera model, timestamps and everything else
-  (only the colour profile is kept),
-- saves it as a JPEG (PNG stays PNG) with a lowercase, URL-safe name.
+- removes **all** metadata: GPS location, phone/camera model, timestamps and everything else,
+- converts colours to sRGB and saves a JPEG (PNG stays PNG) with a lowercase, URL-safe name.
 
-Photos it has already processed are skipped; use `--force` to redo them.
-Options: `--max 2000`, `--quality 90`, or custom folders: `python scripts/prep_photos.py SRC DEST`.
+Photos it has already processed are skipped; use `npm run photos -- --force` to redo them.
+Other options: `--max 2000`, `--quality 90`, or custom folders:
+`node scripts/prep-photos.mjs SRC DEST`.
+
+iPhone **HEIC** files aren't supported by sharp's standard build. Set the iPhone camera to
+*Settings → Camera → Formats → Most Compatible* (shoots JPEG), or export the photos as JPEG first.
 
 Always run photos through the script before committing. The repo is public, and phone photos
 taken at home carry your GPS coordinates.
@@ -94,6 +99,7 @@ Requires Ruby. Then:
 
 ```
 bundle install
+bundle exec jekyll -v      # should say 3.10.x
 bundle exec jekyll serve
 ```
 

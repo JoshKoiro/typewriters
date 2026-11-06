@@ -1,0 +1,12 @@
+{
+  "name": "typewriters",
+  "private": true,
+  "type": "module",
+  "description": "Tools for the typewriter collection site",
+  "scripts": {
+    "photos": "node scripts/prep-photos.mjs"
+  },
+  "dependencies": {
+    "sharp": "^0.35.5"
+  }
+}

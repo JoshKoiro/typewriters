@@ -33,6 +33,9 @@ exclude:
   - Gemfile
   - Gemfile.lock
   - scripts/
+  - package.json
+  - package-lock.json
+  - node_modules/
   - originals/
   - _templates/
   - vendor/
