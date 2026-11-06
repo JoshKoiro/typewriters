@@ -20,13 +20,13 @@ features: []
 weight: ""
 
 # Condition
-functional: working       # working | needs-work | parts-only
+functional: needs-work # working | needs-work | parts-only
 has_case: true
-typing_feel:              # 1 to 5
+typing_feel: # 1 to 5
 favorite: false
 
 # Ownership
-status: collection        # collection | for-sale | sold | sighting
+status: collection # collection | for-sale | sold | sighting
 acquired: 2026-11-02
 acquired_approx: false
 purchased_from: "Facebook Marketplace"
@@ -52,7 +52,7 @@ repairs:
 ## Notes
 
 I purchased this from the wife of a psychotherapist who was the original owner and purchased this in Europe probably not long after the time it was manufactured.
-Since then, it had been used and "well loved".
+Since then, it had been used and _"well loved"_.
 
 There was a receipt in the case that said it had it's platen replaced back in 1982 for $14! It is pretty hard now, and might be a typewriter that I get the platen professionally redone.
 

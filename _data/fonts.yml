@@ -9,7 +9,13 @@
 #             Use "" for a font that's installed on the computer (no download).
 #   fallback: fonts to use while loading, or if the font isn't available
 #
-# Fonts worth trying for this site (name / google):
+# Fonts worth trying (name / google):
+#   Inter              / Inter:wght@400;500;600;700          (current: clean, neutral)
+#   Inter Tight        / Inter+Tight:wght@500;600;700        (current headings: Inter, tighter)
+#   Manrope            / Manrope:wght@400;500;600;700        (softer, geometric)
+#   DM Sans            / DM+Sans:wght@400;500;600;700
+#   Geist              / Geist:wght@400;500;600;700
+#   Newsreader         / Newsreader:opsz,wght@6..72,400;6..72,600  (elegant serif for body text)
 #   Special Elite      / Special+Elite                       (worn typewriter)
 #   Cutive Mono        / Cutive+Mono                         (light typewriter)
 #   IBM Plex Mono      / IBM+Plex+Mono:wght@400;700
@@ -18,21 +24,20 @@
 #   Libre Baskerville  / Libre+Baskerville:wght@400;700      (classic serif)
 #   Lora               / Lora:wght@400;600
 #   Source Serif 4     / Source+Serif+4:opsz,wght@8..60,400;8..60,600
-#   Inter              / Inter:wght@400;600                  (clean sans-serif)
-# Sizes live at the top of assets/css/style.css (--text-*).
+# Sizes and letter spacing live at the top of assets/css/style.css (--text-*, --tracking-*).
 # ------------------------------------------------------------------
 
 heading:   # site title, page titles, card titles, section headings
-  name: "Courier Prime"
-  google: "Courier+Prime:wght@400;700"
-  fallback: '"Courier New", Courier, monospace'
+  name: "Inter Tight"
+  google: "Inter+Tight:wght@500;600;700"
+  fallback: '-apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif'
 
 body:      # notes and other longer text
-  name: "Source Serif 4"
-  google: "Source+Serif+4:opsz,wght@8..60,400;8..60,600"
-  fallback: 'Georgia, "Times New Roman", serif'
+  name: "Inter"
+  google: "Inter:wght@400;500;600;700"
+  fallback: '-apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif'
 
 ui:        # labels, filters, badges, details, buttons
-  name: "Courier Prime"
-  google: "Courier+Prime:wght@400;700"
-  fallback: '"Courier New", Courier, monospace'
+  name: "Inter"
+  google: "Inter:wght@400;500;600;700"
+  fallback: '-apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif'

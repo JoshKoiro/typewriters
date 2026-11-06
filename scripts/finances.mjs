@@ -146,7 +146,7 @@ function groupSum(list) {
 }
 
 // ---------- Console summary ----------
-const money = n => (n < 0 ? '-' : '') + '$' + Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const money = n => (n < 0 ? '−' : '') + '$' + Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 console.log(`\nSpent:            ${money(totals.out)}`);
 console.log(`From sales:       ${money(totals.in)}`);
 console.log(`Net cash:         ${money(totals.net)}`);
@@ -254,72 +254,77 @@ ${fontSpecs.length ? `<link href="https://fonts.googleapis.com/css2?family=${fon
   --font-heading: "${fonts.heading.name}", ${fonts.heading.fallback};
   --font-body: "${fonts.body.name}", ${fonts.body.fallback};
   --font-ui: "${fonts.ui.name}", ${fonts.ui.fallback};
-  --bg: #f6f1e7; --card: #fffdf8; --ink: #1f1c18; --ink-soft: #5d564c; --muted: #898781;
-  --rule: #d9cfbc; --grid: #e6dfd0; --axis: #c3baa8;
-  --in: #2a78d6; --out: #eb6834; --pos: #1d6f42; --neg: #b3361f;
+  --bg: #f8f7f4; --card: #f1f0ec; --ink: #111111; --ink-soft: #5f5e5a; --muted: #9b9a95;
+  --rule: #dddcd6; --grid: #e8e7e2; --axis: #111111;
+  --in: #2a78d6; --out: #eb6834; --pos: #1a7f45; --neg: #c0392b;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #1a1815; --card: #221f1b; --ink: #ece6da; --ink-soft: #a8a094; --muted: #898781;
-    --rule: #3a352e; --grid: #2e2a24; --axis: #4a443b;
-    --in: #3987e5; --out: #d95926; --pos: #5cc48a; --neg: #ff8a73;
+    --bg: #151515; --card: #1e1e1d; --ink: #ededeb; --ink-soft: #a3a29d; --muted: #6c6b67;
+    --rule: #2f2f2d; --grid: #262625; --axis: #ededeb;
+    --in: #3987e5; --out: #d95926; --pos: #4cd17f; --neg: #ff7a6b;
     color-scheme: dark;
   }
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; }
-main { max-width: 1000px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
-h1, h2 { font-family: var(--font-heading); }
-h1 { margin: 0; font-size: clamp(1.5rem, 4vw, 2.1rem); }
-h2 { font-size: 1.15rem; margin: 2.5rem 0 0.75rem; }
-.sub { margin: 0.25rem 0 0; color: var(--ink-soft); font-family: var(--font-ui); font-size: 0.85rem; }
-.private-note { display: inline-block; margin-top: 0.75rem; font-family: var(--font-ui); font-size: 0.8rem; padding: 0.25rem 0.6rem; border: 1px dashed var(--rule); border-radius: 4px; color: var(--ink-soft); }
-.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0.75rem; margin-top: 1.75rem; }
-.tile { background: var(--card); border: 1px solid var(--rule); border-radius: 6px; padding: 0.9rem 1rem; }
-.tile .k { font-family: var(--font-ui); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-soft); }
-.tile .v { font-family: var(--font-heading); font-size: 1.6rem; font-weight: 700; margin-top: 0.15rem; }
-.tile .d { font-size: 0.82rem; color: var(--ink-soft); }
-.panel { background: var(--card); border: 1px solid var(--rule); border-radius: 6px; padding: 1rem 1.1rem; }
-.legend { display: flex; gap: 1.25rem; font-family: var(--font-ui); font-size: 0.8rem; color: var(--ink-soft); margin-bottom: 0.5rem; }
-.legend i { display: inline-block; width: 0.8rem; height: 0.8rem; border-radius: 2px; margin-right: 0.35rem; vertical-align: -1px; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; letter-spacing: -0.011em; -webkit-font-smoothing: antialiased; font-feature-settings: "cv11", "ss03"; }
+main { max-width: 1040px; margin: 0 auto; padding: 2.25rem 2rem 5rem; }
+header { border-bottom: 2px solid var(--ink); padding-bottom: 1.1rem; }
+h1, h2 { font-family: var(--font-heading); font-weight: 600; }
+h1 { margin: 0; font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 700; letter-spacing: -0.07em; line-height: 1; }
+h2 { font-size: 1rem; letter-spacing: -0.025em; margin: 3.25rem 0 1rem; padding-top: 0.7rem; border-top: 2px solid var(--ink); }
+.sub { margin: 0.5rem 0 0; color: var(--ink-soft); font-family: var(--font-ui); font-size: 0.8125rem; }
+.private-note { display: inline-block; margin-top: 0.75rem; font-family: var(--font-ui); font-size: 0.8125rem; padding: 0.25rem 0.55rem; border-radius: 2px; background: var(--card); color: var(--ink-soft); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 1.5rem; margin-top: 2.5rem; }
+.tile { border-top: 2px solid var(--ink); padding-top: 0.6rem; }
+.tile .k { font-family: var(--font-ui); font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.tile .v { font-family: var(--font-heading); font-size: 1.75rem; font-weight: 700; letter-spacing: -0.04em; margin-top: 0.2rem; font-variant-numeric: tabular-nums; }
+.tile .d { font-size: 0.82rem; color: var(--muted); margin-top: 0.1rem; }
+.panel { padding: 0.25rem 0 0; }
+.legend { display: flex; gap: 1.5rem; font-family: var(--font-ui); font-size: 0.85rem; color: var(--ink-soft); margin-bottom: 0.75rem; }
+.legend i { display: inline-block; width: 0.7rem; height: 0.7rem; border-radius: 0; margin-right: 0.4rem; vertical-align: 0; }
 .chart { width: 100%; height: auto; display: block; overflow: visible; }
 .chart .grid { stroke: var(--grid); stroke-width: 1; }
 .chart .axis { stroke: var(--axis); stroke-width: 1.5; }
 .chart .tick { fill: var(--muted); font-family: var(--font-ui); font-size: 11px; }
 .bar-in { fill: var(--in); } .bar-out { fill: var(--out); }
 .hit { fill: transparent; cursor: default; }
-.hit:hover { fill: color-mix(in srgb, var(--ink) 6%, transparent); }
-.hbars { display: grid; gap: 0.45rem; }
-.hbar-row { display: grid; grid-template-columns: minmax(110px, 180px) 1fr auto; gap: 0.75rem; align-items: center; font-size: 0.9rem; }
-.hbar-label { font-family: var(--font-ui); font-size: 0.82rem; }
-.hbar-track { height: 14px; }
+.hit:hover { fill: color-mix(in srgb, var(--ink) 5%, transparent); }
+.hbars { display: grid; gap: 0.55rem; }
+.hbar-row { display: grid; grid-template-columns: minmax(110px, 180px) 1fr auto; gap: 0.9rem; align-items: center; }
+.hbar-label { font-family: var(--font-ui); font-size: 0.88rem; }
+.hbar-track { height: 12px; }
 .hbar { display: block; height: 100%; background: var(--out); border-radius: 0 4px 4px 0; }
-.hbar-value { font-family: var(--font-ui); font-size: 0.82rem; color: var(--ink-soft); text-align: right; min-width: 5.5rem; }
-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
-th { text-align: left; font-family: var(--font-ui); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); border-bottom: 2px solid var(--rule); padding: 0.45rem 0.6rem 0.45rem 0; }
-td { border-bottom: 1px solid var(--rule); padding: 0.45rem 0.6rem 0.45rem 0; vertical-align: top; }
+.hbar-value { font-family: var(--font-ui); font-size: 0.88rem; color: var(--ink-soft); text-align: right; min-width: 5.5rem; font-variant-numeric: tabular-nums; }
+table { width: 100%; border-collapse: collapse; font-family: var(--font-ui); font-size: 0.9rem; }
+th { text-align: left; font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); border-bottom: 1px solid var(--rule); padding: 0 0.75rem 0.6rem 0; white-space: nowrap; }
+td { border-bottom: 1px solid var(--rule); padding: 0.6rem 0.75rem 0.6rem 0; vertical-align: top; }
 .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 th.num { text-align: right; }
 .pos { color: var(--pos); } .neg { color: var(--neg); }
 .pl td:first-child { padding-left: 0; }
 .pl .indent td:first-child { padding-left: 1.25rem; color: var(--ink-soft); }
-.pl .total td { font-weight: 700; border-top: 2px solid var(--ink-soft); }
-.pl .section td { font-family: var(--font-ui); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); padding-top: 1rem; border-bottom: none; }
+.pl .total td { font-weight: 600; border-top: 1px solid var(--ink-soft); }
+.pl .section td { font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding-top: 1.5rem; border-bottom: none; }
+.pl .section:first-child td { padding-top: 0; }
 .scroll { overflow-x: auto; }
-.muted { color: var(--ink-soft); }
-.note { font-size: 0.85rem; color: var(--ink-soft); margin-top: 0.75rem; }
-.warnings { border-left: 4px solid var(--out); padding: 0.5rem 1rem; background: var(--card); font-size: 0.88rem; }
+.nowrap { white-space: nowrap; }
+.muted { color: var(--muted); }
+.note { font-family: var(--font-ui); font-size: 0.85rem; color: var(--ink-soft); margin: 1rem 0 0; line-height: 1.55; }
+.warnings { margin: 0; padding: 0.8rem 1rem 0.8rem 2rem; background: var(--card); border-left: 4px solid var(--out); font-family: var(--font-ui); font-size: 0.88rem; }
 .warnings li { margin: 0.2rem 0; }
-#tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--bg); font-family: var(--font-ui); font-size: 0.78rem; line-height: 1.45; padding: 0.45rem 0.6rem; border-radius: 4px; display: none; z-index: 10; white-space: nowrap; }
-#tip b { display: block; }
+#tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--bg); font-family: var(--font-ui); font-size: 0.8rem; line-height: 1.5; padding: 0.5rem 0.7rem; border-radius: 2px; display: none; z-index: 10; white-space: nowrap; }
+#tip b { display: block; font-weight: 600; }
 </style>
 </head>
 <body>
 <main>
+  <header>
   <h1>Collection finances</h1>
   <p class="sub">Generated ${esc(generated)} · ${tx.length} transactions · ${Object.keys(machines).length} machines</p>
   <span class="private-note">🔒 Private: built from typewriters-private. Don't publish this page.</span>
+  </header>
 
   <section class="tiles">
     <div class="tile"><div class="k">Spent</div><div class="v">${money(totals.out)}</div><div class="d">${out.filter(t => t.category === 'Typewriters').length} typewriters + other costs</div></div>
@@ -371,7 +376,7 @@ th.num { text-align: right; }
   <div class="scroll">
   <table>
     <thead><tr><th>Machine</th><th>Status</th><th>Acquired</th><th class="num">Paid</th><th class="num">Parts &amp; costs</th><th class="num">Total cost</th><th class="num">Sold for</th><th class="num">Profit / loss</th><th class="num">Held</th></tr></thead>
-    <tbody>${perMachine.map(r => `<tr><td>${esc(r.name)}</td><td>${esc(r.status)}</td><td>${esc(r.acquired)}</td><td class="num">${r.paid === null ? '<span class="muted">?</span>' : money(r.paid)}</td><td class="num">${r.extra ? money(r.extra) : ''}</td><td class="num">${money(r.cost)}</td><td class="num">${r.soldFor === null ? '' : money(r.soldFor)}</td><td class="num">${r.profit === null ? '' : signed(r.profit)}</td><td class="num">${held(r.days)}</td></tr>`).join('')}</tbody>
+    <tbody>${perMachine.map(r => `<tr><td>${esc(r.name)}</td><td>${esc(r.status)}</td><td class="nowrap">${esc(r.acquired)}</td><td class="num">${r.paid === null ? '<span class="muted">?</span>' : money(r.paid)}</td><td class="num">${r.extra ? money(r.extra) : ''}</td><td class="num">${money(r.cost)}</td><td class="num">${r.soldFor === null ? '' : money(r.soldFor)}</td><td class="num">${r.profit === null ? '' : signed(r.profit)}</td><td class="num">${held(r.days)}</td></tr>`).join('')}</tbody>
   </table>
   </div>
 
@@ -379,7 +384,7 @@ th.num { text-align: right; }
   <div class="scroll">
   <table>
     <thead><tr><th>Date</th><th>What</th><th>Category</th><th class="num">Amount</th></tr></thead>
-    <tbody>${tx.slice().reverse().map(t => `<tr><td>${t.date}</td><td>${esc(t.label)}${t.slug && t.category !== 'Typewriters' && t.category !== 'Sales' ? ` <span class="muted">· ${esc(nameOf(t.slug))}</span>` : ''}</td><td>${esc(t.category)}</td><td class="num">${signed(t.direction === 'in' ? t.amount : -t.amount)}</td></tr>`).join('')}</tbody>
+    <tbody>${tx.slice().reverse().map(t => `<tr><td class="nowrap">${t.date}</td><td>${esc(t.label)}${t.slug && t.category !== 'Typewriters' && t.category !== 'Sales' ? ` <span class="muted">· ${esc(nameOf(t.slug))}</span>` : ''}</td><td>${esc(t.category)}</td><td class="num">${signed(t.direction === 'in' ? t.amount : -t.amount)}</td></tr>`).join('')}</tbody>
   </table>
   </div>
 </main>

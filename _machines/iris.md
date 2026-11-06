@@ -20,13 +20,13 @@ features: []
 weight: ""
 
 # Condition
-functional:               # working | needs-work | parts-only
+functional: # working | needs-work | parts-only
 has_case: true
-typing_feel:              # 1 to 5
+typing_feel: # 1 to 5
 favorite: false
 
 # Ownership
-status: collection        # collection | for-sale | sold | sighting
+status: collection # collection | for-sale | sold | sighting
 acquired: 2026-07-18
 acquired_approx: false
 purchased_from: "Facebook Marketplace"
@@ -44,4 +44,5 @@ repairs: []
 
 ## Notes
 
-How it types, its history, quirks, anything worth remembering.
+Typebars need adjustment. 4 and / keys stick and @ key out of alignment enough that it's not printed on the type sample.
+Carriage bar has minor rubbing on gear.
