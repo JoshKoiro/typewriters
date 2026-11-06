@@ -20,13 +20,13 @@ features: []
 weight: ""
 
 # Condition
-functional: working # working | needs-work | parts-only
+functional:               # working | needs-work | parts-only
 has_case: true
-typing_feel: # 1 to 5
+typing_feel:              # 1 to 5
 favorite: false
 
 # Ownership
-status: collection # collection | for-sale | sold | sighting
+status: collection        # collection | for-sale | sold | sighting
 acquired: 2026-07-18
 acquired_approx: false
 purchased_from: "Facebook Marketplace"

@@ -17,6 +17,7 @@
     "photos": "node scripts/prep-photos.mjs",
     "photos:force": "node scripts/prep-photos.mjs --force",
     "ledger": "node scripts/ledger.mjs",
+    "finances": "node scripts/finances.mjs",
     "check:photos": "node scripts/check-photos.mjs",
     "check:private": "node scripts/check-private.mjs",
     "check": "npm run check:photos && npm run check:private && npm run build",

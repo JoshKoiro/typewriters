@@ -46,6 +46,7 @@ Press `Ctrl+C` to stop the server.
 | `npm run serve` | Local preview at http://localhost:4000/typewriters/ with live reload |
 | `npm run serve:private` | Same, plus your private ledger details (🔒) on each machine. Local only. |
 | `npm run ledger` | Prints the private ledger joined with the machine data, with totals |
+| `npm run finances` | Builds and opens a private finance report: cash flow, profit & loss, per machine |
 | `npm run build` | Builds the site into `_site/` without serving it. Catches template errors. |
 | `npm run clean` | Deletes the `_site/` build output and cache. Try this if the preview acts strangely. |
 | `npm run new -- <slug>` | Creates a new machine, e.g. `npm run new -- 1965-brother-valiant` |
@@ -243,6 +244,19 @@ variable to its folder.
 - `npm run ledger` prints a table of every machine with paid and sold prices, plus totals, and
   points out machines missing from the ledger.
 - `npm run new -- <slug>` adds an empty ledger entry for the new machine.
+
+**Finance report:** `npm run finances` builds `typewriters-private/reports/finances.html` and
+opens it in your browser. Other spending (ribbons, parts, tools, shipping) goes in
+`typewriters-private/expenses.yml`. It shows:
+- totals: spent, made from sales, net cash, profit/loss, and the collection's value at cost
+- monthly cash flow: a chart and table of money in vs out per month, with a running total
+- profit & loss: sales minus what the sold machines cost (purchase plus parts logged against
+  them), minus running costs like tools. Machines you still own count as *collection at cost*,
+  not as a loss.
+- per machine: paid, extra costs, total cost, sale price, profit/loss, how long you held it
+- a list of missing data, e.g. a sold machine with no `sold_date`
+
+The report is written into the private repo, never into this one.
 
 **Why it can't leak:** GitHub builds the public site from this repo, which never contains the
 ledger. The local copy `_data/private.yml` is git-ignored, and `npm run check` (so also

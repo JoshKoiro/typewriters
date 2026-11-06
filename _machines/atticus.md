@@ -12,7 +12,7 @@ color: "black"
 # Specs
 typeface: "Elite"
 pitch: 12
-size_class: "portable" # ultra-portable | portable | semi-portable | standard
+size_class: "portable"    # ultra-portable | portable | semi-portable | standard
 keyboard: "QWERTY"
 carriage_width:
 spools: ""
@@ -20,13 +20,13 @@ features: []
 weight: ""
 
 # Condition
-functional: working # working | needs-work | parts-only
+functional: needs-work    # working | needs-work | parts-only
 has_case: true
-typing_feel: # 1 to 5
+typing_feel:              # 1 to 5
 favorite: false
 
 # Ownership
-status: collection # collection | for-sale | sold | sighting
+status: collection        # collection | for-sale | sold | sighting
 acquired: 2026-07-13
 acquired_approx: false
 purchased_from: "Facebook Marketplace"
