@@ -16,6 +16,8 @@
  *
  * Colours are converted to standard sRGB, which is what browsers expect.
  *
+ * Requires Node.js 20.9+.
+ *
  * Usage (from the repo root):
  *     npm install                      # once
  *     npm run photos                   # originals/ -> photos/

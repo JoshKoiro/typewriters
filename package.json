@@ -3,8 +3,23 @@
   "private": true,
   "type": "module",
   "description": "Tools for the typewriter collection site",
+  "engines": {
+    "node": ">=20.9.0"
+  },
   "scripts": {
-    "photos": "node scripts/prep-photos.mjs"
+    "setup": "npm install && bundle install",
+
+    "serve": "bundle exec jekyll serve --livereload",
+    "build": "bundle exec jekyll build",
+    "clean": "bundle exec jekyll clean",
+
+    "new": "node scripts/new-machine.mjs",
+    "photos": "node scripts/prep-photos.mjs",
+    "photos:force": "node scripts/prep-photos.mjs --force",
+    "check:photos": "node scripts/check-photos.mjs",
+
+    "check": "npm run check:photos && npm run build",
+    "deploy": "npm run check && git push"
   },
   "dependencies": {
     "sharp": "^0.35.5"
