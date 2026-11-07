@@ -40,6 +40,14 @@ tags: []
 cover: ""
 
 repairs:
+  - date: 2026-11-07
+    work: >-
+      Spent the evening replacing the front feed rollers with silicone rubber. The issue was the OD of the tubing
+      seemed to vary a little bit, plus there is some wobble in the roller bar as well. The combination makes the
+      rollers run into the front bottom edge of the carriage every rotation or so, causing the paper to not advance.
+      The fix that I found was to use a power drill, attach the roller bar to the drill clamp and rotate it like a
+      lathe while rubbing sandpaper over it to shrink the OD  until it stops interfering. I'm measuing about 8.2mm
+      right now, but it might need to go down to 8mm or less to fully stop interfering.
   - date: 2026-11-03
     work: >-
       After doing some writing tests with it, I quickly noticed that the feed rollers had flat
