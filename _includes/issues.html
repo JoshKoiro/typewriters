@@ -1,0 +1,112 @@
+{%- comment -%}
+  Issues for one machine, as a compact list. Each row shows the status, the problem and, once
+  it's dealt with, how. Clicking a row opens the details: the problem description, then a
+  newest-first timeline of the resolution and every repair that points at it (`issue: <id>` on the repair).
+  Usage: {% include issues.html machine=page %}
+  Listed in the order of _data/issue_statuses.yml, so open issues come first.
+  Linking to #issue-<id> opens that issue (assets/js/site.js).
+{%- endcomment -%}
+{%- assign m = include.machine -%}
+{%- if m.issues and m.issues.size > 0 -%}
+{%- assign counts = "" | split: "" -%}
+{%- for s in site.data.issue_statuses -%}
+  {%- assign n = m.issues | where: "status", s.key | size -%}
+  {%- if n > 0 %}{% capture c %}{{ n }} {{ s.label | downcase }}{% endcapture %}{% assign counts = counts | push: c %}{% endif -%}
+{%- endfor %}
+<div class="issues" id="issues">
+  <div class="section-head">
+    <h2>Issues</h2>
+    <span class="section-count">{{ counts | join: " · " }}</span>
+    <button type="button" class="expand-all" data-expand-all="#issues" aria-pressed="false">Show all details</button>
+  </div>
+  <div class="issue-rows">
+  {%- for s in site.data.issue_statuses %}
+  {%- assign group = m.issues | where: "status", s.key -%}
+  {%- for issue in group %}
+  {%- comment -%} Optional fields get a "" default: Jekyll's where returns the whole list for a blank value {%- endcomment -%}
+  {%- assign category_key = issue.category | default: "" -%}
+  {%- assign category_info = site.data.fields.issue_category | where: "key", category_key | first -%}
+  {%- include linked-repairs.html machine=m issue=issue -%}
+  {%- assign last_repair = linked_repairs | last -%}
+  {%- assign last_outcome_key = last_repair.outcome | default: "" -%}
+  {%- assign last_outcome = site.data.fields.repair_outcome | where: "key", last_outcome_key | first %}
+  <details class="issue" id="issue-{{ issue.id }}" style="--issue-color: {{ s.color }}">
+    <summary>
+      <span class="badge" style="--badge-color: {{ s.color }}"><span class="badge-icon" aria-hidden="true">{{ s.icon }}</span>{{ s.label }}</span>
+      <span class="issue-summary">
+        <span class="issue-title">{{ issue.title }}</span>
+        <span class="issue-sub">
+          {%- if category_info %}{{ category_info.label }}{% elsif issue.category %}{{ issue.category }}{% endif -%}
+          {%- if issue.opened %}{% if issue.category %} · {% endif %}since {{ issue.opened | date: "%b %Y" }}{% endif -%}
+          {%- if linked_repairs.size > 0 %} · {{ linked_repairs.size }} repair{% if linked_repairs.size != 1 %}s{% endif %}{% else %} · no repairs yet{% endif -%}
+          {%- if s.key == "open" and last_outcome %} · last: <span style="color: {{ last_outcome.color }}">{{ last_outcome.label | downcase }}</span>{% endif -%}
+        </span>
+        {%- if s.key != "open" and issue.resolution and issue.resolution != "" %}
+        <span class="issue-resolution"><strong>{{ s.label }}:</strong> {{ issue.resolution | markdownify | strip_html | truncatewords: 28 }}</span>
+        {%- endif %}
+      </span>
+      <span class="issue-toggle" aria-hidden="true"></span>
+    </summary>
+
+    <div class="issue-details">
+      {%- comment -%} The problem, set apart from the history so it reads as the issue's description {%- endcomment -%}
+      {%- if issue.description and issue.description != "" %}
+      <div class="issue-description">
+        <p class="issue-description-label">The problem</p>
+        {{ issue.description | markdownify }}
+      </div>
+      {%- endif %}
+
+      {%- comment -%} History, newest first: resolution, repairs (latest to earliest), then when it was first found {%- endcomment -%}
+      {%- assign history = linked_repairs | reverse %}
+      <p class="timeline-label">History <span>newest first</span></p>
+      <ol class="timeline">
+        {%- if s.key != "open" %}
+        <li class="tl-item tl-resolved" style="--tl-color: {{ s.color }}">
+          <span class="tl-dot" aria-hidden="true">{% if s.key == "fixed" %}✓{% endif %}</span>
+          <div class="tl-content">
+            <p class="tl-label">{{ s.label }}{% if issue.resolved %} <time>{{ issue.resolved | date: "%b %-d, %Y" }}</time>{% endif %}</p>
+            {%- if issue.resolution and issue.resolution != "" %}
+            {{ issue.resolution | markdownify }}
+            {%- endif %}
+          </div>
+        </li>
+        {%- endif %}
+        {%- for r in history %}
+        {%- assign outcome_key = r.outcome | default: "" -%}
+        {%- assign outcome_info = site.data.fields.repair_outcome | where: "key", outcome_key | first %}
+        <li class="tl-item tl-repair{% if outcome_info %} tl-has-outcome{% endif %}"{% if outcome_info %} style="--tl-color: {{ outcome_info.color }}"{% endif %}>
+          <span class="tl-dot" aria-hidden="true">{% if outcome_info %}{{ outcome_info.icon }}{% endif %}</span>
+          <div class="tl-content">
+            <p class="tl-label">Repair{% if r.date %} <time>{{ r.date | date: "%b %-d, %Y" }}</time>{% endif %}{% if outcome_info %} · <span class="tl-outcome">{{ outcome_info.label }}</span>{% endif %}</p>
+            {{ r.work | markdownify }}
+          </div>
+        </li>
+        {%- endfor %}
+        <li class="tl-item tl-opened">
+          <span class="tl-dot" aria-hidden="true"></span>
+          <div class="tl-content">
+            <p class="tl-label">Problem found{% if issue.opened %} <time>{{ issue.opened | date: "%b %-d, %Y" }}</time>{% endif %}</p>
+            {%- if issue.description and issue.description != "" %}
+            {{ issue.description | markdownify }}
+            {%- endif %}
+          </div>
+        </li>
+      </ol>
+
+      {%- if issue.related and issue.related.size > 0 %}
+      <p class="issue-related">Related:
+        {%- for rel in issue.related %}
+        {%- assign rel_issue = m.issues | where: "id", rel | first %}
+        <a href="#issue-{{ rel }}">{{ rel_issue.title | default: rel }}</a>{% unless forloop.last %},{% endunless %}
+        {%- endfor %}
+      </p>
+      {%- endif %}
+      <p class="issue-permalink"><a href="#issue-{{ issue.id }}">Link to this issue</a>{% if category_info %} · <a href="{{ '/issues/' | relative_url }}?category={{ issue.category | url_encode }}">All {{ category_info.label | downcase }} issues</a>{% endif %}</p>
+    </div>
+  </details>
+  {%- endfor %}
+  {%- endfor %}
+  </div>
+</div>
+{%- endif -%}

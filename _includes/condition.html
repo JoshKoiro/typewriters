@@ -1,0 +1,19 @@
+{%- comment -%}
+  Works out a machine's condition badge.
+  Usage: {% include condition.html machine=m %}
+  Sets:
+    open_issue_count   number of issues with status: open
+    condition_key      "parts-only", "needs-work" or "" (nothing to flag)
+    condition_info     its entry from `condition` in _data/fields.yml (label, icon, colour)
+
+  parts_only: true wins; otherwise any open issue means needs-work. Managed and fixed issues
+  don't count, so closing the last open issue clears the badge.
+{%- endcomment -%}
+{%- assign open_issue_count = include.machine.issues | where: "status", "open" | size -%}
+{%- assign condition_key = "" -%}
+{%- if include.machine.parts_only == true -%}
+  {%- assign condition_key = "parts-only" -%}
+{%- elsif open_issue_count > 0 -%}
+  {%- assign condition_key = "needs-work" -%}
+{%- endif -%}
+{%- assign condition_info = site.data.fields.condition | where: "key", condition_key | first -%}

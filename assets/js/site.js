@@ -48,3 +48,36 @@ document.querySelectorAll('[data-since]').forEach(el => {
   const template = el.dataset.template || '{d}';
   el.textContent = template.replace('{d}', text);
 });
+
+// ---------- Collapsible issues ----------
+// A link to #issue-<id> (from the repair log, another page or a shared URL) opens that issue.
+function openTargetDetails() {
+  if (!location.hash) return;
+  let el = null;
+  try { el = document.querySelector(location.hash); } catch (e) { return; }
+  if (el && el.tagName === 'DETAILS') {
+    el.open = true;
+    el.scrollIntoView({ block: 'start' });
+  }
+}
+window.addEventListener('hashchange', openTargetDetails);
+openTargetDetails();
+
+// "Show all details" / "Hide all details" buttons: data-expand-all="<selector of the container>"
+document.querySelectorAll('[data-expand-all]').forEach(button => {
+  const container = document.querySelector(button.dataset.expandAll);
+  if (!container) return;
+  const all = () => Array.from(container.querySelectorAll('details'));
+  const sync = () => {
+    const allOpen = all().every(d => d.open);
+    button.textContent = allOpen ? 'Hide all details' : 'Show all details';
+    button.setAttribute('aria-pressed', allOpen);
+  };
+  button.addEventListener('click', () => {
+    const open = !all().every(d => d.open);
+    all().forEach(d => { d.open = open; });
+    sync();
+  });
+  all().forEach(d => d.addEventListener('toggle', sync));
+  sync();
+});

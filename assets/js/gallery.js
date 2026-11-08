@@ -1,6 +1,6 @@
 // Gallery: filtering, sorting and the summary line.
 //
-// Filters: within a group (status, size, functional) a card matches ANY selected chip;
+// Filters: within a group (status, size, condition) a card matches ANY selected chip;
 // for tags it must have ALL selected tags. No chips selected in a group = no filter.
 // Everything is kept in the URL, so links can be shared, e.g.
 //   ?status=for-sale          only machines for sale
@@ -16,7 +16,7 @@
   const empty = document.getElementById('empty-state');
   const clearButton = document.getElementById('clear-filters');
 
-  const GROUPS = { status: 'any', favorite: 'any', size: 'any', functional: 'any', tag: 'all' };
+  const GROUPS = { status: 'any', favorite: 'any', size: 'any', condition: 'any', tag: 'all' };
   const DEFAULT_SORT = 'acquired-desc';
 
   // ---------- State from the URL ----------

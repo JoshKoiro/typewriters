@@ -56,7 +56,8 @@ Press `Ctrl+C` to stop the server.
 | `npm run photos:force` | Reprocesses *all* photos, including ones already done |
 | `npm run check:photos` | Makes sure no published photo still has GPS or other metadata |
 | `npm run check:private` | Makes sure the private ledger copy can't be committed |
-| `npm run check` | `check:photos` + `check:private` + `build`: everything that should pass before publishing |
+| `npm run check:issues` | Checks issues and repairs: repairs pointing at issue ids that don't exist, bad statuses, missing resolutions |
+| `npm run check` | `check:photos` + `check:private` + `check:issues` + `build`: everything that should pass before publishing |
 | `npm run deploy` | Runs `check`, then `git push` if it passes. **Commit first.** |
 
 The `--` in `npm run new -- <slug>` is required. It passes the slug through npm to the script.
@@ -87,8 +88,8 @@ git commit -m "Add Brother Valiant"
 npm run deploy
 ```
 
-`deploy` refuses to push if any photo in `photos/` still has metadata, or if the site fails to
-build. The live site updates 1–2 minutes after a push. Progress shows in the repo's **Actions** tab.
+`deploy` refuses to push if any photo in `photos/` still has metadata, if a repair points at an
+issue that doesn't exist, or if the site fails to build. The live site updates 1–2 minutes after a push. Progress shows in the repo's **Actions** tab.
 
 ### Sell a machine
 
@@ -113,6 +114,21 @@ written in Markdown (`## Heading`, `- bullet`, `**bold**`).
 
 ---
 
+### Log an issue or a repair
+
+Problems with a machine go in its `issues:` list; the work you do goes in `repairs:`. A repair
+that was for an issue points at it with `issue: <id>`. Ad-hoc work (a cleaning, new spools) just
+leaves `issue:` out.
+
+1. Something's wrong: add an issue with `status: open`.
+2. Each time you work on it: add a repair with `issue: <id>`, and optionally how it went
+   (`outcome: fixed`, `partial` or `no-help`). Failed attempts are worth logging too.
+3. Once it's dealt with: set `status: fixed` (or `managed` if you're living with it), plus
+   `resolved:` and a `resolution:` saying how.
+4. `npm run check:issues` catches typos in ids before you publish.
+
+Full field list: [Issues and repairs](#issues-and-repairs).
+
 ## How it fits together
 
 ```
@@ -120,14 +136,16 @@ _machines/<slug>.md       one file per typewriter: details at the top, notes bel
 photos/<slug>/            web-ready photos (committed to git, published)
 originals/<slug>/         full-size camera originals (NOT in git, back these up separately!)
 _data/statuses.yml        statuses: labels, emoji, colours
-_data/fields.yml          allowed values for size_class and functional
+_data/fields.yml          allowed values for size_class, condition badges, issue categories, repair outcomes
+_data/issue_statuses.yml  issue statuses (open / managed / fixed): labels, emoji, colours
 _data/fonts.yml           the site's fonts (change typography here)
 _data/private.yml         LOCAL copy of the private ledger (git-ignored, see "Private data")
 _templates/               blank machine file used by `npm run new`
 scripts/                  the Node scripts behind the npm commands
 _layouts/, _includes/     page templates (Jekyll / Liquid)
 index.html                the gallery page with the filters
-assets/css, assets/js     styles, gallery filtering, photo lightbox
+issues.html               the /issues/ page: every issue on every machine, with filters
+assets/css, assets/js     styles, gallery + issues filtering, photo lightbox
 _config.yml               site title, URL, baseurl
 ```
 
@@ -157,7 +175,7 @@ Every field is optional; blank ones are hidden on the site. Dates are written `Y
 | `spools` | `"universal 2-inch"` | Which ribbon spools it uses |
 | `features` | `[tabulator, paper support]` | |
 | `weight` | `"8 lb"` | |
-| `functional` | `working` | `working`, `needs-work`, `parts-only`. Gallery filter + badge. |
+| `parts_only` | `true` | A parts machine: shows a "Parts only" badge. Otherwise the condition comes from issues: any **open issue** shows a "Needs work" badge with the count, linking to the issues. |
 | `has_case` | `true` | `true` or `false` |
 | `typing_feel` | `4` | 1–5, shown as dots. "Typing feel" sort. |
 | `favorite` | `true` | ★ on the card, and a "Favorites" filter |
@@ -170,20 +188,57 @@ Every field is optional; blank ones are hidden on the site. Dates are written `Y
 | `twdb_url` | `"https://typewriterdatabase.com/…"` | |
 | `tags` | `[glass-keys, script]` | Free-form; each becomes a filter |
 | `cover` | `front` | Shot to use as the gallery cover (default: thumbnail) |
-| `repairs` | see below | Shown as a table under the notes |
+| `issues` | see below | Problems with the machine: a list under the notes; click one for its repair timeline |
+| `repairs` | see below | Repair log table under the issues, newest first; can point at an issue |
 
-Allowed values and display labels for `size_class` and `functional` live in `_data/fields.yml`.
+Allowed values and display labels for `size_class` (and the condition badges) live in `_data/fields.yml`.
 
-**Repair log:** one entry per job. `>-` lets the text run over several lines:
+### Issues and repairs
+
+An **issue** is a problem with the machine. A **repair** is one job you did. Repairs can point at
+the issue they were for, so each issue gets a timeline: the problem, every attempt at it (and how
+it went), then how it was resolved. `>-` lets text run over several lines.
 
 ```yaml
+issues:
+  - id: feed-rollers                 # repairs point at this; lowercase-with-hyphens
+    title: "Paper not advancing: flat-spotted feed rollers"
+    category: paper-feed
+    status: open                     # open | managed | fixed
+    opened: 2026-11-03
+    description: >-
+      What's wrong and how it shows up.
+    resolved: 2026-11-20             # once it's managed or fixed
+    resolution: >-
+      How it was fixed, or why you're living with it.
+    related: [line-space-ratchet]    # optional: other issues on this machine
+
 repairs:
   - date: 2026-11-03
+    issue: feed-rollers              # optional; leave out for ad-hoc work like a cleaning
+    outcome: partial                 # optional: fixed | partial | no-help
     work: >-
       Replaced the flat-spotted feed rollers with 3/8" OD silicone tubing.
   - date: 2026-11-10
-    work: Adjusted the escapement.
+    work: Cleaned and oiled the segment.
 ```
+
+| Issue field | Notes |
+|-------------|-------|
+| `id` | Unique on that machine. Also the link: `/machines/olivia/#issue-feed-rollers` |
+| `title` | One line. Quote it if it contains a `:` |
+| `category` | From `issue_category` in `_data/fields.yml`. Filter on the /issues/ page. |
+| `status` | `open`, `managed` (living with it / worked around it), `fixed`. In `_data/issue_statuses.yml`. |
+| `opened`, `resolved` | Dates, no quotes |
+| `description`, `resolution` | Markdown. The resolution closes the timeline. |
+| `related` | List of other issue ids on the same machine |
+
+A repair can deal with several issues at once: `issue: [feed-rollers, hard-platen]`.
+The repair log table still lists every job; linked ones get a chip that jumps to the issue.
+
+Every issue from every machine is also listed on **/issues/**, with status and category filters.
+Those keep their state in the URL, so e.g. every paper-feed problem across the collection is
+**https://joshkoiro.github.io/typewriters/issues/?category=paper-feed**
 
 Anything in the front matter is **public**. GitHub shows the raw file even if the site doesn't
 display a field. Prices paid, sellers and places go in the private ledger (below).
@@ -211,7 +266,7 @@ The gallery keeps its filters in the URL:
 
 - `?status=for-sale`: only machines for sale
 - `?tag=ultra-portable`: only ultra-portables
-- `?size=ultra-portable&functional=working`: filters combine
+- `?size=ultra-portable&condition=needs-work`: filters combine
 - `?sort=year-asc`: oldest machines first (also `acquired-asc`, `year-desc`, `make`, `feel`)
 - `?q=olivetti`: a search
 
@@ -272,7 +327,7 @@ and a list of fonts to try. Text sizes are the `--text-*` variables at the top o
 `assets/css/style.css`.
 
 **Colours:** the light and dark palettes are at the top of `assets/css/style.css`. Status colours
-are in `_data/statuses.yml`, and functional colours in `_data/fields.yml`.
+are in `_data/statuses.yml`, and condition badge colours in `_data/fields.yml`.
 
 **Light/dark mode:** follows the visitor's system setting until they click the toggle (top right),
 then remembers their choice.

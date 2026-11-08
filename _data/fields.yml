@@ -11,17 +11,59 @@ size_class:
   - key: standard
     label: Standard (desktop)
 
-# Note: don't use yes/no as values in YAML; they turn into true/false.
-functional:
-  - key: working
-    label: Working
-    icon: "✅"
-    color: "#2f7d4f"
+# Condition badges. These aren't typed in machine files; they're worked out (_includes/condition.html):
+#   needs-work  the machine has open issues
+#   parts-only  the machine file has parts_only: true
+condition:
   - key: needs-work
     label: Needs work
     icon: "🔧"
-    color: "#b7791f"
+    color: "#c74600"
   - key: parts-only
     label: Parts only
     icon: "⚙️"
     color: "#6b5b4b"
+
+# Issue categories (the `category:` field on an issue). Used to group and filter issues
+# across all machines on the /issues/ page. Add more as you need them.
+issue_category:
+  - key: paper-feed
+    label: Paper feed
+  - key: line-spacing
+    label: Line spacing
+  - key: escapement
+    label: Escapement & spacing
+  - key: carriage
+    label: Carriage
+  - key: typebars
+    label: Typebars & segment
+  - key: keys
+    label: Keys & keyboard
+  - key: shift
+    label: Shift
+  - key: ribbon
+    label: Ribbon & vibrator
+  - key: platen
+    label: Platen
+  - key: margins
+    label: Margins & bell
+  - key: body
+    label: Body & case
+  - key: other
+    label: Other
+
+# How a repair went (the optional `outcome:` field on a repair). Shown on the issue timeline.
+# icon is a plain symbol, drawn inside the timeline dot.
+repair_outcome:
+  - key: fixed
+    label: Fixed it
+    icon: "✓"
+    color: "#2f7d4f"
+  - key: partial
+    label: Helped some
+    icon: "◐"
+    color: "#b7791f"
+  - key: no-help
+    label: Didn't help
+    icon: "✗"
+    color: "#7a746b"

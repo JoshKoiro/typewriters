@@ -20,7 +20,7 @@ features: []
 weight: ""
 
 # Condition
-functional: # working | needs-work | parts-only
+parts_only: false
 has_case:
 typing_feel: # 1 to 5
 favorite: false
@@ -39,8 +39,19 @@ twdb_url: "https://typewriterdatabase.com/1963-royal-safari.28779.typewriter"
 tags: []
 cover: ""
 
+issues:
+  - id: ribbon-vibrator
+    title: Ribbon vibrator sticking
+    category: ribbon
+    status: open
+    opened: 2026-10-15
+    description: >-
+      The ribbon vibrator sticks, apparently from built-up grime.
+
 repairs:
   - date: 2026-10-15
+    issue: ribbon-vibrator
+    outcome: no-help
     work: >-
       attempted to clean grime out of ribbon vibrator that was sticking.
 ---

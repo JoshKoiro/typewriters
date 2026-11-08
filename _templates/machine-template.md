@@ -21,7 +21,7 @@ features: []              # e.g. [tabulator, touch control, paper support, two-c
 weight: ""                # e.g. "8.5 lb"
 
 # Condition
-functional: working       # working | needs-work | parts-only
+parts_only: false         # true if it's only good for parts (shows a "Parts only" badge)
 has_case: false           # true | false
 typing_feel:              # 1 to 5
 favorite: false
@@ -40,9 +40,26 @@ twdb_url: ""
 tags: []
 cover: ""                 # shot to use as the gallery cover, e.g. front (default: thumbnail)
 
-# Repair log: one entry per job, newest last. Shown as a table on the page.
+# Issues: problems with the machine. Listed on the page; click one to see its repair timeline.
+# See README.md > "Issues and repairs". Run npm run check:issues to catch typos.
+issues: []
+#  - id: feed-rollers            # short, lowercase-with-hyphens; repairs point at this
+#    title: "Paper not advancing: flat-spotted feed rollers"
+#    category: paper-feed        # see issue_category in _data/fields.yml
+#    status: open                # open | managed | fixed
+#    opened: 2026-11-03
+#    description: >-
+#      What's wrong and how it shows up.
+#    resolved:                   # date, once it's managed or fixed
+#    resolution: >-
+#      How it was fixed, or why you're living with it.
+#    related: []                 # other issue ids on this machine
+
+# Repair log: one entry per job, in any order (the page sorts newest first).
 repairs: []
 #  - date: 2026-11-03
+#    issue: feed-rollers         # optional: which issue this job was for (leave out for ad-hoc work)
+#    outcome: partial            # optional: fixed | partial | no-help
 #    work: >-
 #      Replaced the feed rollers with silicone tubing.
 #      Can run over several lines.

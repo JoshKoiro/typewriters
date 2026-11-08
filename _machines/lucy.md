@@ -20,7 +20,7 @@ features: []
 weight: ""
 
 # Condition
-functional: # working | needs-work | parts-only
+parts_only: false
 has_case: true
 typing_feel: # 1 to 5
 favorite: false

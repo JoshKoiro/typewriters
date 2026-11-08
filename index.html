@@ -6,13 +6,14 @@ layout: default
 {%- comment -%} Work out which filter values are actually in use {%- endcomment -%}
 {%- assign used_status = "" | split: "" -%}
 {%- assign used_size = "" | split: "" -%}
-{%- assign used_functional = "" | split: "" -%}
+{%- assign used_condition = "" | split: "" -%}
 {%- assign all_tags = "" | split: "" -%}
 {%- assign any_favorite = false -%}
 {%- for m in machines -%}
   {%- assign used_status = used_status | push: m.status -%}
   {%- if m.size_class and m.size_class != "" %}{% assign used_size = used_size | push: m.size_class %}{% endif -%}
-  {%- if m.functional and m.functional != "" %}{% assign used_functional = used_functional | push: m.functional %}{% endif -%}
+  {%- include condition.html machine=m -%}
+  {%- if condition_key != "" %}{% assign used_condition = used_condition | push: condition_key %}{% endif -%}
   {%- for t in m.tags %}{% assign all_tags = all_tags | push: t %}{% endfor -%}
   {%- if m.favorite == true %}{% assign any_favorite = true %}{% endif -%}
 {%- endfor -%}
@@ -54,12 +55,12 @@ layout: default
   </div>
   {%- endif %}
 
-  {%- if used_functional.size > 0 %}
+  {%- if used_condition.size > 0 %}
   <div class="filter-group">
-    <span class="filter-label">Functional</span>
-    {%- for f in site.data.fields.functional %}
-    {%- if used_functional contains f.key %}
-    <button type="button" class="chip" data-group="functional" data-value="{{ f.key }}" data-color style="--chip-color: {{ f.color }}" aria-pressed="false">{{ f.icon }} {{ f.label }}</button>
+    <span class="filter-label">Condition</span>
+    {%- for f in site.data.fields.condition %}
+    {%- if used_condition contains f.key %}
+    <button type="button" class="chip" data-group="condition" data-value="{{ f.key }}" data-color style="--chip-color: {{ f.color }}" aria-pressed="false">{{ f.icon }} {{ f.label }}</button>
     {%- endif %}
     {%- endfor %}
   </div>
@@ -84,8 +85,9 @@ layout: default
   {%- for m in machines %}
   {%- include photos.html machine=m -%}
   {%- assign status_info = site.data.statuses | where: "key", m.status | first -%}
-  {%- assign functional_info = site.data.fields.functional | where: "key", m.functional | first -%}
-  {%- assign size_info = site.data.fields.size_class | where: "key", m.size_class | first -%}
+  {%- include condition.html machine=m -%}
+  {%- assign size_key = m.size_class | default: "" -%}
+  {%- assign size_info = site.data.fields.size_class | where: "key", size_key | first -%}
   {%- assign private = site.data.private[m.slug] -%}
 
   {%- capture acquired_iso %}{% if m.acquired %}{{ m.acquired | date: "%Y-%m-%d" }}{% endif %}{% endcapture -%}
@@ -100,7 +102,7 @@ layout: default
      href="{{ m.url | relative_url }}"
      data-status="{{ m.status }}"
      data-size="{{ m.size_class }}"
-     data-functional="{{ m.functional }}"
+     data-condition="{{ condition_key }}"
      data-tags="{{ m.tags | join: '|' }}"
      data-favorite="{% if m.favorite == true %}true{% endif %}"
      data-acquired="{{ acquired_iso }}"
@@ -119,8 +121,8 @@ layout: default
           {%- if status_info.icon and status_info.icon != "" %}<span class="badge-icon" aria-hidden="true">{{ status_info.icon }}</span>{% endif -%}
           {{ status_info.label | default: m.status }}
         </span>
-        {%- if functional_info and m.functional != "working" %}
-        <span class="badge" style="--badge-color: {{ functional_info.color }}"><span class="badge-icon" aria-hidden="true">{{ functional_info.icon }}</span>{{ functional_info.label }}</span>
+        {%- if condition_info %}
+        <span class="badge" style="--badge-color: {{ condition_info.color }}"><span class="badge-icon" aria-hidden="true">{{ condition_info.icon }}</span>{{ condition_info.label }}{% if open_issue_count > 0 %}<span class="badge-count">{{ open_issue_count }}</span>{% endif %}</span>
         {%- endif %}
         {%- if m.favorite == true %}<span class="star card-star" title="Favorite">★</span>{% endif %}
       </div>

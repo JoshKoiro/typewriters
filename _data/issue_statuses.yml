@@ -1,0 +1,23 @@
+# Status values for issues logged against a machine (the `issues:` list in a machine file).
+#   key   = what you type in the issue's `status:` field
+#   label = what visitors see
+#   icon  = emoji shown on the badge
+#   color = badge / timeline colour
+#
+# The order here is the order issues are listed on a machine page (open ones first).
+# Anything other than "open" counts as closed and shows its resolution at the end of the timeline.
+
+- key: open
+  label: Open
+  icon: "⚠️"
+  color: "#c2571a"
+
+- key: managed
+  label: Managed
+  icon: "🩹"
+  color: "#6d5bb0"
+
+- key: fixed
+  label: Fixed
+  icon: "✅"
+  color: "#2f7d4f"

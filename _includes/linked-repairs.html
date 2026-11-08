@@ -1,0 +1,14 @@
+{%- comment -%}
+  Finds the repairs that point at one issue.
+  Usage: {% include linked-repairs.html machine=m issue=issue %}
+  Sets: linked_repairs (array, oldest first)
+
+  A repair points at an issue with `issue: <id>`, or `issue: [id-one, id-two]` if one job
+  dealt with several issues. Repairs without `issue:` are ad-hoc work (cleaning, new spools...).
+{%- endcomment -%}
+{%- assign linked_repairs = "" | split: "" -%}
+{%- for r in include.machine.repairs -%}
+  {%- assign rids = r.issue | join: "," | split: "," -%}
+  {%- if rids contains include.issue.id %}{% assign linked_repairs = linked_repairs | push: r %}{% endif -%}
+{%- endfor -%}
+{%- assign linked_repairs = linked_repairs | sort: "date", "last" -%}

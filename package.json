@@ -20,7 +20,8 @@
     "finances": "node scripts/finances.mjs",
     "check:photos": "node scripts/check-photos.mjs",
     "check:private": "node scripts/check-private.mjs",
-    "check": "npm run check:photos && npm run check:private && npm run build",
+    "check:issues": "node scripts/check-issues.mjs",
+    "check": "npm run check:photos && npm run check:private && npm run check:issues && npm run build",
     "deploy": "npm run check && git push",
     "yeet": "node node_modules/code-context-yeeter/yeetCode.js"
   },

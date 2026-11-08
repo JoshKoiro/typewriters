@@ -20,7 +20,7 @@ features: []
 weight: ""
 
 # Condition
-functional: needs-work # working | needs-work | parts-only
+parts_only: false
 has_case: true
 typing_feel: # 1 to 5
 favorite: false
@@ -39,8 +39,40 @@ twdb_url: "https://typewriterdatabase.com/1956-olivetti-lettera-22.29312.typewri
 tags: []
 cover: ""
 
+issues:
+  - id: feed-rollers
+    title: "Paper not advancing: flat-spotted feed rollers"
+    category: paper-feed
+    status: fixed
+    opened: 2026-11-03
+    description: >-
+      After some writing tests, the original front feed rollers turned out to have flat spots, so the paper
+      doesn't feed reliably. Original rollers measured 9mm OD and 5mm ID.
+
+  - id: line-space-ratchet
+    title: Line spacing advances an extra space about once per platen turn
+    category: line-spacing
+    status: managed
+    opened: 2026-11-07
+    description: >-
+      The gear that the line-space mechanism catches on to advance the platen isn't perfectly round
+      (or is bent), so roughly once every rotation of the platen it advances an extra space.
+    resolved: 2026-11-07
+    resolution: >-
+      Not planning to fix this one for now. Living with it for the time being.
+
 repairs:
   - date: 2026-11-07
+    issue: feed-rollers
+    outcome: fixed
+    work: >-
+      Sanded off another tenth or 2 of a millimeter on the OD of the feed rollers. It can now accept normal printer paper
+      with a backing sheet, or a single sheet of thicker paper. Ideally, I'd like it to be able to accept the thicker
+      sketch sheet with a backing sheet like most of my other machines, I'll call this good enough for now. When I have some
+      more time, I'll maybe sand the rollers down a little bit more and see if that helps some more.
+  - date: 2026-11-06
+    issue: feed-rollers
+    outcome: partial
     work: >-
       Spent the evening replacing the front feed rollers with silicone rubber. The issue was the OD of the tubing
       seemed to vary a little bit, plus there is some wobble in the roller bar as well. The combination makes the
@@ -49,6 +81,7 @@ repairs:
       lathe while rubbing sandpaper over it to shrink the OD  until it stops interfering. I'm measuing about 8.2mm
       right now, but it might need to go down to 8mm or less to fully stop interfering.
   - date: 2026-11-03
+    issue: feed-rollers
     work: >-
       After doing some writing tests with it, I quickly noticed that the feed rollers had flat
       spots, so I'm replacing them with silicone rubber tubing that I will cut to size. The

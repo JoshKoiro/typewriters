@@ -3,8 +3,9 @@ layout: default
 ---
 {%- include photos.html machine=page -%}
 {%- assign status_info = site.data.statuses | where: "key", page.status | first -%}
-{%- assign functional_info = site.data.fields.functional | where: "key", page.functional | first -%}
-{%- assign size_info = site.data.fields.size_class | where: "key", page.size_class | first -%}
+{%- include condition.html machine=page -%}
+{%- assign size_key = page.size_class | default: "" -%}
+{%- assign size_info = site.data.fields.size_class | where: "key", size_key | first -%}
 {%- assign private = site.data.private[page.slug] -%}
 {%- capture acquired_iso %}{% if page.acquired %}{{ page.acquired | date: "%Y-%m-%d" }}{% endif %}{% endcapture -%}
 {%- capture sold_iso %}{% if page.sold_date %}{{ page.sold_date | date: "%Y-%m-%d" }}{% endif %}{% endcapture -%}
@@ -22,8 +23,13 @@ layout: default
         {%- if status_info.icon and status_info.icon != "" %}<span class="badge-icon" aria-hidden="true">{{ status_info.icon }}</span>{% endif -%}
         {{ status_info.label | default: page.status }}
       </span>
-      {%- if functional_info %}
-      <span class="badge" style="--badge-color: {{ functional_info.color }}"><span class="badge-icon" aria-hidden="true">{{ functional_info.icon }}</span>{{ functional_info.label }}</span>
+      {%- if condition_info and open_issue_count > 0 %}
+      <a class="badge badge-link" href="#issues" style="--badge-color: {{ condition_info.color }}" title="Jump to the issues">
+        <span class="badge-icon" aria-hidden="true">{{ condition_info.icon }}</span>{{ condition_info.label }}
+        <span class="badge-count">{{ open_issue_count }} open issue{% if open_issue_count != 1 %}s{% endif %} ↓</span>
+      </a>
+      {%- elsif condition_info %}
+      <span class="badge" style="--badge-color: {{ condition_info.color }}"><span class="badge-icon" aria-hidden="true">{{ condition_info.icon }}</span>{{ condition_info.label }}</span>
       {%- endif %}
       {%- if page.favorite == true %}<span class="star" title="Favorite">★</span>{% endif %}
       {%- for tag in page.tags %}
@@ -96,7 +102,7 @@ layout: default
       {%- endif %}
 
       {%- capture condition_html -%}
-        {%- if functional_info %}<dt>Functional</dt><dd>{{ functional_info.icon }} {{ functional_info.label }}</dd>{% endif %}
+        {%- if page.parts_only == true %}<dt>Parts machine</dt><dd>Yes</dd>{% endif %}
         {%- if page.has_case == true %}<dt>Case</dt><dd>Yes</dd>{% elsif page.has_case == false %}<dt>Case</dt><dd>No</dd>{% endif %}
         {%- if page.typing_feel %}
         <dt>Typing feel</dt>
@@ -141,25 +147,15 @@ layout: default
 
     <section class="notes">
       {{ content }}
-
-      {%- if page.repairs.size > 0 %}
-      <div class="repairs">
-        <h2>Repair log</h2>
-        <table>
-          <thead><tr><th>Date</th><th>Work done</th></tr></thead>
-          <tbody>
-            {%- for r in page.repairs %}
-            <tr>
-              <td>{% if r.date %}{{ r.date | date: "%b %-d, %Y" }}{% endif %}</td>
-              <td>{{ r.work | markdownify }}</td>
-            </tr>
-            {%- endfor %}
-          </tbody>
-        </table>
-      </div>
-      {%- endif %}
     </section>
   </div>
+
+  {%- if page.issues.size > 0 or page.repairs.size > 0 %}
+  <section class="machine-issues" id="issues-and-repairs">
+    {%- include issues.html machine=page %}
+    {%- include repair-log.html machine=page %}
+  </section>
+  {%- endif %}
 </article>
 
 <dialog class="lightbox" id="lightbox">

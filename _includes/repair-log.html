@@ -1,0 +1,42 @@
+{%- comment -%}
+  The full repair log for one machine, newest first.
+  Usage: {% include repair-log.html machine=page %}
+  Repairs that point at an issue get a link to it; ad-hoc work (cleaning, spools) shows "General".
+{%- endcomment -%}
+{%- assign m = include.machine -%}
+{%- if m.repairs and m.repairs.size > 0 -%}
+{%- assign log = m.repairs | sort: "date" | reverse %}
+<div class="repairs" id="repairs">
+  <div class="section-head">
+    <h2>Repair log</h2>
+    <span class="section-count">{{ log.size }} job{% if log.size != 1 %}s{% endif %}</span>
+  </div>
+  <table>
+    <thead><tr><th>Date</th><th>For</th><th>Work done</th></tr></thead>
+    <tbody>
+      {%- for r in log %}
+      {%- assign rids = r.issue | join: "," | split: "," -%}
+      {%- assign outcome_key = r.outcome | default: "" -%}{%- comment -%} "" default: Jekyll's where returns the whole list for a blank value {%- endcomment -%}
+      {%- assign outcome_info = site.data.fields.repair_outcome | where: "key", outcome_key | first %}
+      <tr>
+        <td class="repair-date">{% if r.date %}{{ r.date | date: "%b %-d, %Y" }}{% endif %}</td>
+        <td class="repair-for">
+          {%- if rids.size > 0 %}
+          {%- for rid in rids %}
+          {%- assign linked_issue = m.issues | where: "id", rid | first %}
+          <a class="issue-chip" href="#issue-{{ rid }}">{{ linked_issue.title | default: rid }}</a>
+          {%- endfor %}
+          {%- else %}
+          <span class="repair-general">General</span>
+          {%- endif %}
+          {%- if outcome_info %}
+          <span class="outcome-chip" style="--chip-color: {{ outcome_info.color }}">{{ outcome_info.icon }} {{ outcome_info.label }}</span>
+          {%- endif %}
+        </td>
+        <td class="repair-work">{{ r.work | markdownify }}</td>
+      </tr>
+      {%- endfor %}
+    </tbody>
+  </table>
+</div>
+{%- endif -%}

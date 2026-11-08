@@ -1,0 +1,108 @@
+---
+layout: default
+title: Issues
+permalink: /issues/
+description: "Problems found on the machines in the collection, and the repairs that went into them."
+---
+{%- comment -%}
+  Every issue from every machine in one list. Each row links to the full issue (with its repair
+  timeline) on the machine's page. Filtering and sorting is done by assets/js/issues.js.
+{%- endcomment -%}
+{%- assign used_status = "" | split: "" -%}
+{%- assign used_category = "" | split: "" -%}
+{%- assign total = 0 -%}
+{%- for m in site.machines -%}
+  {%- for issue in m.issues -%}
+    {%- assign total = total | plus: 1 -%}
+    {%- assign used_status = used_status | push: issue.status -%}
+    {%- if issue.category and issue.category != "" %}{% assign used_category = used_category | push: issue.category %}{% endif -%}
+  {%- endfor -%}
+{%- endfor -%}
+
+<section class="page-intro">
+  <h1>Issues</h1>
+  <p>Problems I've run into on the machines in the collection, and what I did about them: what worked, what didn't, and what I've decided to live with. Click an issue for the full repair history.</p>
+</section>
+
+{%- if total == 0 %}
+<p class="empty-state">No issues logged yet.</p>
+{%- else %}
+<section class="filters" aria-label="Filter and sort issues">
+  <div class="filter-top">
+    <input type="search" id="search" placeholder="Search issues, machines, repairs…" aria-label="Search">
+    <select id="sort" aria-label="Sort by">
+      <option value="opened-desc">Newest first</option>
+      <option value="opened-asc">Oldest first</option>
+      <option value="machine">Machine A–Z</option>
+    </select>
+  </div>
+
+  <div class="filter-group">
+    <span class="filter-label">Status</span>
+    {%- for s in site.data.issue_statuses %}
+    {%- if used_status contains s.key %}
+    <button type="button" class="chip" data-group="status" data-value="{{ s.key }}" data-color style="--chip-color: {{ s.color }}" aria-pressed="false">{{ s.icon }} {{ s.label }}</button>
+    {%- endif %}
+    {%- endfor %}
+  </div>
+
+  {%- if used_category.size > 0 %}
+  <div class="filter-group">
+    <span class="filter-label">Category</span>
+    {%- for c in site.data.fields.issue_category %}
+    {%- if used_category contains c.key %}
+    <button type="button" class="chip" data-group="category" data-value="{{ c.key }}" aria-pressed="false">{{ c.label }}</button>
+    {%- endif %}
+    {%- endfor %}
+  </div>
+  {%- endif %}
+
+  <div class="filter-group">
+    <p class="result-line" id="result-line" aria-live="polite"></p>
+    <button type="button" class="chip chip-clear" id="clear-filters" hidden>Clear filters</button>
+  </div>
+</section>
+
+<section class="issue-list" id="issue-list">
+  {%- for m in site.machines %}
+  {%- for issue in m.issues %}
+  {%- assign s = site.data.issue_statuses | where: "key", issue.status | first -%}
+  {%- assign category_key = issue.category | default: "" -%}
+  {%- assign category_info = site.data.fields.issue_category | where: "key", category_key | first -%}
+  {%- include linked-repairs.html machine=m issue=issue -%}
+  {%- capture repair_text %}{% for r in linked_repairs %} {{ r.work }}{% endfor %}{% endcapture -%}
+  {%- capture opened_iso %}{% if issue.opened %}{{ issue.opened | date: "%Y-%m-%d" }}{% endif %}{% endcapture %}
+  <a class="issue-row"
+     href="{{ m.url | relative_url }}#issue-{{ issue.id }}"
+     data-status="{{ issue.status }}"
+     data-status-label="{{ s.label | default: issue.status | downcase }}"
+     data-category="{{ issue.category }}"
+     data-opened="{{ opened_iso }}"
+     data-sort-name="{{ m.make | append: ' ' | append: m.model | downcase | escape }}"
+     data-search="{{ issue.title | append: ' ' | append: issue.description | append: ' ' | append: issue.resolution | append: ' ' | append: category_info.label | append: ' ' | append: m.title | append: ' ' | append: m.nickname | append: repair_text | strip_newlines | downcase | escape }}">
+    <span class="badge" style="--badge-color: {{ s.color | default: '#555' }}">
+      {%- if s.icon %}<span class="badge-icon" aria-hidden="true">{{ s.icon }}</span>{% endif -%}
+      {{ s.label | default: issue.status }}
+    </span>
+    <div>
+      <h2>{{ issue.title }}</h2>
+      <p class="card-meta">
+        <span class="issue-machine">{{ m.title }}{% if m.nickname and m.nickname != "" %} &ldquo;{{ m.nickname }}&rdquo;{% endif %}</span>
+        {%- if category_info %} · {{ category_info.label }}{% endif -%}
+        {%- if issue.opened %} · opened {{ issue.opened | date: "%b %-d, %Y" }}{% endif -%}
+        {%- if linked_repairs.size > 0 %} · {{ linked_repairs.size }} repair{% if linked_repairs.size != 1 %}s{% endif %}{% endif -%}
+      </p>
+      {%- assign summary = issue.resolution | default: issue.description -%}
+      {%- if summary and summary != "" %}
+      <p class="issue-snippet">{{ summary | markdownify | strip_html | truncatewords: 32 }}</p>
+      {%- endif %}
+    </div>
+  </a>
+  {%- endfor %}
+  {%- endfor %}
+</section>
+
+<p class="empty-state" id="empty-state" hidden>No issues match those filters.</p>
+
+<script src="{{ '/assets/js/issues.js' | relative_url }}" defer></script>
+{%- endif %}
