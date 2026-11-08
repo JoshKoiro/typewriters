@@ -12,6 +12,7 @@
     "serve:private": "node scripts/sync-private.mjs && bundle exec jekyll serve --livereload",
     "build": "bundle exec jekyll build",
     "clean": "bundle exec jekyll clean",
+    "cms": "node cms/server.mjs",
     "new": "node scripts/new-machine.mjs",
     "rename": "node scripts/rename-originals.mjs",
     "photos": "node scripts/prep-photos.mjs",
@@ -21,12 +22,14 @@
     "check:photos": "node scripts/check-photos.mjs",
     "check:private": "node scripts/check-private.mjs",
     "check:issues": "node scripts/check-issues.mjs",
+    "test:cms": "node cms/test/yaml-patch.test.mjs",
     "check": "npm run check:photos && npm run check:private && npm run check:issues && npm run build",
     "deploy": "npm run check && git push",
     "yeet": "node node_modules/code-context-yeeter/yeetCode.js"
   },
   "dependencies": {
     "code-context-yeeter": "github:JoshKoiro/code-context-yeeter",
+    "marked": "^18.1.3",
     "sharp": "^0.35.5",
     "yaml": "^2.6.0"
   }

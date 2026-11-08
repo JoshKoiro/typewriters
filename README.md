@@ -43,6 +43,7 @@ Press `Ctrl+C` to stop the server.
 | Command | What it does |
 |---------|--------------|
 | `npm run setup` | Installs everything: Node packages (sharp) and Ruby gems (Jekyll). Run after cloning. |
+| `npm run cms` | **The editor**: opens http://localhost:4100 in your browser and starts the preview. See [Editor (CMS)](#editor-cms). |
 | `npm run serve` | Local preview at http://localhost:4000/typewriters/ with live reload |
 | `npm run serve:private` | Same, plus your private ledger details (🔒) on each machine. Local only. |
 | `npm run ledger` | Prints the private ledger joined with the machine data, with totals |
@@ -58,6 +59,7 @@ Press `Ctrl+C` to stop the server.
 | `npm run check:private` | Makes sure the private ledger copy can't be committed |
 | `npm run check:issues` | Checks issues and repairs: repairs pointing at issue ids that don't exist, bad statuses, missing resolutions |
 | `npm run check` | `check:photos` + `check:private` + `check:issues` + `build`: everything that should pass before publishing |
+| `npm run test:cms` | Tests the editor's file saving against your machine files (changes nothing). Run after editing `cms/lib/yaml-patch.mjs`. |
 | `npm run deploy` | Runs `check`, then `git push` if it passes. **Commit first.** |
 
 The `--` in `npm run new -- <slug>` is required. It passes the slug through npm to the script.
@@ -109,7 +111,7 @@ history stays. Record what you got for it in the private ledger (`sold_for:`).
 
 ### Edit details or notes
 
-Edit the machine's file in `_machines/`. Everything below the second `---` is the notes section,
+Use the editor (`npm run cms`), or edit the machine's file in `_machines/`. Everything below the second `---` is the notes section,
 written in Markdown (`## Heading`, `- bullet`, `**bold**`).
 
 ---
@@ -129,6 +131,60 @@ leaves `issue:` out.
 
 Full field list: [Issues and repairs](#issues-and-repairs).
 
+## Editor (CMS)
+
+```
+npm run cms
+```
+
+A local editor for everything in `_machines/` and the photos, in your browser at
+**http://localhost:4100**. It also starts the Jekyll preview (port 4000), so "Preview page" links
+show your changes as soon as you save. Stop both with **Ctrl+C**.
+
+- **Workbench** (start page): every open issue across the collection and recent repairs, with
+  **Log a repair**, **New issue** and **New machine** buttons that work without opening a machine.
+- **Machine → Details**: a form built from the template. Dropdowns come from the `_data/` files
+  (add a status or category there and it appears), and text fields suggest values you've used before.
+  **Save** or **Ctrl+S**.
+- **Machine → Notes**: the Markdown below the front matter, with a live preview.
+- **Machine → Issues & repairs**: *Log repair*, *Close…*, *Reopen*, *Edit* on each issue. Logging a
+  repair with the outcome **Fixed it** offers to close the issue in the same step, and closing an
+  issue can log the repair that fixed it. These save straight away.
+- **Machine → Photos**: one slot per standard shot (thumbnail, front, side…, from
+  `scripts/photo-order.mjs`). Drop a **JPEG** on a slot and it's saved as `originals/<slug>/<shot>.jpg`
+  and processed (`prep-photos` for that machine only). Drop onto a filled slot to replace it or add a
+  variant (`front-open`); drag a photo onto another slot to move it; ★ sets the cover. Anything else
+  goes in **Extras** with a name you choose.
+- **Publish**: changed files (click one to see the diff), a commit message suggested from the
+  machines you changed, **Run checks**, **Commit**, **Commit and publish** (`npm run deploy`).
+- **Rename…** and **Move to trash…** are in the machine's header. A rename warns that shared links
+  break and that the private ledger entry is **not** renamed.
+
+**It keeps your files' format.** Saving only rewrites the values you changed: comments, quoting,
+hand-wrapped text and key order stay exactly as they were, so a CMS edit looks like a careful hand
+edit in git. (How: `cms/lib/yaml-patch.mjs`. Every save is checked by parsing it back; if it wouldn't
+match the form, nothing is written.) You can still edit the files by hand; just don't do both at
+once, because the editor saves over the file.
+
+**Nothing is deleted.** Removed or replaced photos and trashed machines go to `_trash/` (git-ignored,
+not published). Empty it yourself when you're sure.
+
+**JPEG only.** The photo processing (sharp) can't read most iPhone HEIC files. Set the phone to
+*Settings → Camera → Formats → Most Compatible*, or export as JPEG.
+
+**Fresh clone?** `originals/` isn't in git, so a machine can have published photos but no originals
+on a new computer. The Photos tab then shows **Restore originals from published photos**; do that
+before changing photos, otherwise processing would remove the published ones.
+
+**Not included:** the private ledger (prices, sellers). Keep editing `ledger.yml` by hand.
+
+Options: `npm run cms -- --no-preview` (don't start Jekyll), `-- --no-open` (don't open the
+browser), `-- --port 4200`. The server only listens on this computer (127.0.0.1).
+
+**Changing the editor:** fields, labels, help text and where dropdown options come from are in
+`cms/config.mjs`; the server is `cms/server.mjs` + `cms/lib/`; the UI is plain JavaScript in
+`cms/public/` (no build step). Each file starts with a comment explaining what it does and why.
+
 ## How it fits together
 
 ```
@@ -146,6 +202,8 @@ _layouts/, _includes/     page templates (Jekyll / Liquid)
 index.html                the gallery page with the filters
 issues.html               the /issues/ page: every issue on every machine, with filters
 assets/css, assets/js     styles, gallery + issues filtering, photo lightbox
+cms/                      the local editor (npm run cms); not published
+_trash/                   where the editor puts deleted/replaced files (git-ignored)
 _config.yml               site title, URL, baseurl
 ```
 
@@ -421,6 +479,15 @@ If not, delete `Gemfile.lock` and run `bundle install` again.
 
 **`npm run serve` shows a blank or broken page**
 Make sure the URL includes `/typewriters/`. If it still looks wrong, run `npm run clean`, then serve again.
+
+**`npm run cms` says the port is in use**
+The editor is probably already running in another terminal. Use that one, or start on another port:
+`npm run cms -- --port 4200`. If the preview says it failed, check its **Log** in the sidebar; often
+Jekyll is already running from `npm run serve` (stop that one).
+
+**The editor refuses to save ("Fix the problems marked in red")**
+Same rules as `npm run check:issues`: e.g. a repair pointing at an issue id that doesn't exist.
+Warnings (amber) don't block saving.
 
 **A HEIC photo fails in `npm run photos`**
 sharp can't read iPhone HEIC files. Set the iPhone to *Settings → Camera → Formats →

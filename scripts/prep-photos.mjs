@@ -23,6 +23,7 @@
  *     npm run photos                   # process new/changed photos
  *     npm run photos:force             # re-process everything
  *     node scripts/prep-photos.mjs SRC DEST --max 2000 --quality 90
+ *     node scripts/prep-photos.mjs --only olivia   # just one machine folder (used by the CMS)
  */
 
 import { readdir, mkdir, access, unlink } from 'node:fs/promises';
@@ -46,6 +47,7 @@ const opt = (name, fallback) => {
 };
 const maxSide = Number(opt('--max', 2000));
 const quality = Number(opt('--quality', 90));
+const only = opt('--only', null); // one machine slug; the CMS processes just the machine you're editing
 const force = args.includes('--force');
 const positional = args.filter(a => !a.startsWith('--'));
 const src = path.resolve(positional[0] ?? path.join(repo, 'originals'));
@@ -88,7 +90,7 @@ if (loose.length) {
   console.log(`  NOTE  ${loose.length} photo(s) directly in ${path.basename(src)}/ were ignored: put them in a machine folder.`);
 }
 
-for (const folder of entries.filter(e => e.isDirectory()).map(e => e.name).sort()) {
+for (const folder of entries.filter(e => e.isDirectory() && (!only || e.name === only)).map(e => e.name).sort()) {
   const inDir = path.join(src, folder);
   const outDir = path.join(dest, folder);
   const files = (await readdir(inDir)).filter(f => INPUT_EXTS.has(path.extname(f).toLowerCase()));

@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Typewriter CMS</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Crect width=%2216%22 height=%2216%22 rx=%222%22 fill=%22%23111%22/%3E%3Ctext x=%228%22 y=%2212%22 font-size=%2211%22 text-anchor=%22middle%22 fill=%22%23fff%22 font-family=%22monospace%22%3ET%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <!-- The editor is built by app.js. Layout: sidebar (machines, preview) + main view (routed by #hash). -->
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main" id="main"><p class="muted pad">Loading…</p></main>
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+</body>
+</html>

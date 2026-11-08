@@ -16,3 +16,5 @@ Thumbs.db
 # Private ledger data, copied in by `npm run serve:private`. NEVER commit this.
 _data/private.yml
 yeet_manifest.md
+# CMS trash: files the editor deletes or replaces land here (see cms/lib/util.mjs). Empty it by hand.
+_trash/

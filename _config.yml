@@ -38,4 +38,5 @@ exclude:
   - node_modules/
   - originals/
   - _templates/
+  - cms/            # the local editor (npm run cms): never part of the published site
   - vendor/
