@@ -39,7 +39,33 @@ twdb_url: "https://typewriterdatabase.com/1966-olympia-sf-de-luxe.29131.typewrit
 tags: []
 cover: ""
 
-repairs: []
+issues:
+  - id: silent-spring-issue
+    title: Silent Spring issue
+    category: escapement
+    status: fixed
+    opened: 2026-10-08
+    description: >-
+      The silent spring is falling out of position when I am trying to use the carriage return lever. It
+      doesn't stay in the correct position after repeated uses of the carriage return and it ends up locking
+      the escape mechanism when it's not in the correct position. It also causes the carriage to be very
+      difficult to move.
+    resolved: 2026-11-16
+    resolution: >-
+      I removed the silent spring and applied machine oil to the groove in the rack gear where the silent
+      spring rests. After applying the oil with a fine tip paint brush, applying only a very small amount, it
+      allowed the silent spring to slide and not catch onto the rotation of the pinon gear and the star wheel
+      assembly.
+
+repairs:
+  - date: 2026-11-16
+    issue: silent-spring-issue
+    outcome: fixed
+    work: >-
+      I removed the silent spring and applied machine oil to the groove in the rack gear where the silent
+      spring rests. After applying the oil with a fine tip paint brush, applying only a very small amount, it
+      allowed the silent spring to slide and not catch onto the rotation of the pinon gear and the star wheel
+      assembly.
 ---
 
 ## Notes

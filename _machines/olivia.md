@@ -48,6 +48,12 @@ issues:
     description: >-
       After some writing tests, the original front feed rollers turned out to have flat spots, so the paper
       doesn't feed reliably. Original rollers measured 9mm OD and 5mm ID.
+    resolved: 2026-11-07
+    resolution: >-
+      Replacing the feed rollers with silicone tubing. I then sanded the rollers down to the appropriate size
+      and evenness because the rollers would rub on the carriage and cause uneven pressure on the paper being
+      fed through. (Almost re-creating the same issue the original rollers had) sanding them down with a drill
+      and sandpaper fixed the issue.
 
   - id: line-space-ratchet
     title: Line spacing advances an extra space about once per platen turn
@@ -88,6 +94,9 @@ repairs:
       sizes measured with my calipers are 9mm OD and 5mm ID. However, since I live in the US,
       and we use "Freedom Units", I am replacing it with 3/8" OD and 3/16" ID tubing. The
       success of this is yet to be determined...
+  - date: 2026-11-07
+    work: >-
+      Replaced the ribbon. Put a fresh new black ribbon on it.
 ---
 
 ## Notes
